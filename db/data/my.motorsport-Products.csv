@@ -1,0 +1,4 @@
+ID,productName,description,price,category,image
+6,Product 1,This is product 1,100.00, Category 1,https://example.com/product1.jpg
+5,Product 2,This is product 2,200.00,Category 2,https://example.com/product2.jpg
+4,Product 3,This is product 3,300.00,Category 3,https://example.com/product3.jpg

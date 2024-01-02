@@ -1,0 +1,7 @@
+ID,packageName,validFrom,validTo,type,status,totalAmount
+1,Winter Sale,2023-01-01,2023-12-31,PU,Active,100.00
+2,Starter pack,2023-01-01,2024-12-31,SU,Active,100.00
+3,Sale 1,2023-01-01,2024-12-31,PU,Active,100.00
+4,Essential Pack,2023-01-01,2024-12-31,SU,Active,100.00
+5,New Promotion,2023-01-01,2024-12-31,PU,Active,100.00
+6,Package Explorer,2023-01-01,2022-12-31,SU,Active,100.00

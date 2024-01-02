@@ -1,9 +1,9 @@
 namespace my.motorsport;
 using { Currency, Country, custom.managed, sap } from './common';
-using {my.motorsport.Products as Products} from '../db/master-data';
+using {my.motorsport.Product as Product} from '../db/master-data';
 
 
-entity OrderTemplates {
+entity OrderTemplate {
   key ID: UUID;
   packageName : String;
   validFrom: Date;
@@ -11,13 +11,13 @@ entity OrderTemplates {
   type: Association to TemplateType;
   status: String;
   totalAmount: Decimal(10, 2);
-  items: Composition of many OrderTemplateItems on items.parent = $self;
+  to_Items: Composition of many OrderTemplateItem on to_Items.parent = $self;
 }
 
-entity OrderTemplateItems {
+entity OrderTemplateItem {
   key ID: UUID;
-  parent: Association to OrderTemplates;
-  product: Association to Products;
+  parent: Association to OrderTemplate;
+  product: Association to Product;
   quantity: Integer;
   price: Decimal(10, 2);
 }

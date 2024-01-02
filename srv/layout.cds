@@ -1,7 +1,7 @@
 
-using OrderService from './service';
+using {OrderService } from './service';
 
-
+using { my.motorsport.Product} from '../db/master-data';
 
 annotate OrderService.Orders with @(
 UI.HeaderInfo : {
@@ -22,7 +22,7 @@ annotate OrderService.Orders with @(
     SortOrder      : [{
       $Type      : 'CommonI.SortOrderType',
       Property   : ID,
-      Descending : true
+      Descending : false
       }]
   });
 
@@ -54,35 +54,33 @@ annotate OrderService.Orders with @(
 
  annotate OrderService.Orders with @(
   UI.FieldGroup #OrderData : {
-    Data : [ { Value : ID } , 
+    Data : [ { Value : ID  , Label : 'Order No.'} , 
     { Value : orderDate , Label : 'Ordered Date'} , 
     { Value : orderedBy , Label : 'Order Placed By'} ,
     { Value : status , Label : 'Status' }, 
     { Value : totalAmount , Label : ' Total Amount' } ]
   });
 
-annotate OrderService.OrderItems with @UI: {
-    Identification                : [{Value: product_ID}, ],
-    HeaderInfo                    : {
-        TypeName      : 'Product',
-        TypeNamePlural: 'Products',
-        Title         : {Value: ''},
-        Description   : {Value: ''}
-    },
-    PresentationVariant           : {
-        Visualizations: ['@UI.LineItem'],
-        SortOrder     : [{
-            $Type     : 'Common.SortOrderType',
-            Property  : product_ID,
-            Descending: false
-        }]
-    },
-    SelectionFields               : [],
-    LineItem                      : [
-     { Value: product.image, Label: '   ' },
-      { Value: product_ID, Label: 'Product' },
-      { Value: price,  Label: 'Unit Price' },
-      { Value: quantity, Label: 'Quantity' },
-      { Value: price, Label: 'Price' }
-    ]
-};
+annotate OrderService.OrderItems with @(
+  UI.PresentationVariant : {
+    Text           : 'Default',
+    Visualizations : ['@UI.LineItem'],
+    SortOrder      : [{
+      $Type      : 'CommonI.SortOrderType',
+      Property   : ID,
+      Descending : true
+      }]
+  }
+
+  );
+
+annotate OrderService.OrderItems  with @(
+  UI.LineItem : [
+    { Value : to_Product.image, Label : ' '},
+    { Value : to_Product.productName, Label : 'Product Name' },
+    { Value : to_Product_ID, Label : 'Product ID' },
+
+    { Value : quantity, Label : 'Quantity' },
+    { Value : price, Label : 'Price' },
+    { Value : totalAmount, Label : 'Total Amount' }
+  ]);

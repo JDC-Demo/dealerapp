@@ -1,4 +1,0 @@
-ID,productName,description,price,category,image
-6,FJR1300ES,This is product 1,100.00, Category 1,https://github.com/JDC-Demo/dealerapp/blob/main/db/images/FJR1300ES.png
-5,YZ125,This is product 2,200.00,Category 2,https://github.com/JDC-Demo/dealerapp/blob/main/db/images/YZ125.png
-4,YZF-R7,This is product 3,300.00,Category 3,https://github.com/JDC-Demo/dealerapp/blob/main/db/images/YZF-R7.png

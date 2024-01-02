@@ -1,6 +1,9 @@
 namespace my.motorsport;
+// ensure all masterdata entities are available to clients
+@cds.autoexpose @readonly
+aspect MasterData {}
 
-entity Products {
+entity Product : MasterData {
   key ID: UUID;
   productName: String;
   description: String;

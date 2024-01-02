@@ -1,9 +1,9 @@
 namespace my.motorsport;
 
 using { Currency, Country, custom.managed, sap } from './common';
-using {my.motorsport.Products as Products} from '../db/master-data';
+using {my.motorsport.Product as Product} from '../db/master-data';
 
-entity Orders {
+entity Order : managed{
   key ID: Integer; //UUID;
   orderedBy: String;
   orderDate: Date;
@@ -12,13 +12,13 @@ entity Orders {
   totalAmount: Decimal(10, 2);
   currencyCode   : Currency;
   description    : String(1024);
-  to_Items: Composition of many OrderItems on to_Items.parent = $self;
+  to_Items: Composition of many OrderItem on to_Items.to_Order = $self;
 }
 
-entity OrderItems {
+entity OrderItem : managed {
   key ID: UUID;
-  parent: Association to one Orders;
-  product: Association to Products;
+  to_Order : Association to Order;
+  to_Product: Association to Product;
   quantity: Integer;
   price: Decimal(10, 2);
   currencyCode   : Currency;

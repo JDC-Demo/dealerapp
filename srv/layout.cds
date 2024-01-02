@@ -81,6 +81,6 @@ annotate OrderService.OrderItems  with @(
     { Value : to_Product_ID, Label : 'Product ID' },
 
     { Value : quantity, Label : 'Quantity' },
-    { Value : price, Label : 'Price' },
-    { Value : totalAmount, Label : 'Total Amount' }
+    { Value : to_Product.price, Label : 'Price' },
+    { Value : netPrice, Label : 'Net Price' }
   ]);

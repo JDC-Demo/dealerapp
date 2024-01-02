@@ -1,4 +1,4 @@
 ID,productName,description,price,category,image
-6,FJR1300ES,This is product 1,100.00, Category 1,https://github.com/JDC-Demo/dealerapp/blob/bcd11965ee46070a19ba598c16817557446566f7/db/images/FJR1300ES.png
-5,YZ125,This is product 2,200.00,Category 2,https://github.com/JDC-Demo/dealerapp/blob/bcd11965ee46070a19ba598c16817557446566f7/db/images/FJR1300ES.png
-4,YZF-R7,This is product 3,300.00,Category 3,https://github.com/JDC-Demo/dealerapp/blob/bcd11965ee46070a19ba598c16817557446566f7/db/images/FJR1300ES.png
+6,FJR1300ES,This is product 1,6999.00, Category 1,/media/FJR1300ES.png
+5,YZ125,This is product 2,8999.00,Category 2,/media/YZ125.png
+4,YZF-R7,This is product 3,7499.00,Category 3,/media/YZF-R7.png

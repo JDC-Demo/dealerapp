@@ -1,3 +1,6 @@
-ID,orderedBy,orderDate,status,deliveryAddress,totalAmount
-1,User 1,2022-01-01,Processing,Address 1,0
-2,User 2,2022-01-02,Processing,Address 2,0
+orderUUID,orderID,to_Customer_customerID,orderedBy,orderDate,status,deliveryAddress,totalAmount,CurrencyCode_code,description,paymentMethod,shippingMethod,trackingNumber,estimatedDeliveryDate,orderNotes,billingAddress,discount,tax,deliveryContactNumber,deliveryInstructions,isPaid,paymentDate,cancellationReason
+52657221A8E4645C17002DF03754AB66,1,000001,User 1,2022-01-01,Processing,Address 1,100,USD,Order for User 1,Credit Card,Standard,123456789,2022-01-10,Leave at the front door,Address 1,10,5,1234567890,Leave at the front door,True,2022-01-01,
+52657221A8E4645C17002DF03754AB62,2,000001,User 2,2022-01-02,Processing,Address 2,200,USD,Order for User 2,PayPal,Express,987654321,2022-01-11,Leave at the back door,Address 2,20,10,0987654321,Leave at the back door,True,2022-01-02,
+52657221A8E4645C17002DF03754AB63,3,000001,User 3,2022-01-03,Shipped,Address 3,300,USD,Order for User 3,Debit Card,Standard,234567890,2022-01-12,Leave with the neighbor,Address 3,15,7.5,2345678901,Leave with the neighbor,True,2022-01-03,
+52657221A8E4645C17002DF03754AB73,4,000001,User 4,2022-01-04,Delivered,Address 4,400,USD,Order for User 4,Bank Transfer,Express,345678901,2022-01-13,Leave in the mailbox,Address 4,0,20,3456789012,Leave in the mailbox,True,2022-01-04,
+52657221A8E4645C17002DF03754AB83,5,000001,User 5,2022-01-05,Cancelled,Address 5,500,USD,Order for User 5,Credit Card,Standard,456789012,2022-01-14,Do not leave unattended,Address 5,25,12.5,4567890123,Do not leave unattended,False,2022-01-05,Out of stock

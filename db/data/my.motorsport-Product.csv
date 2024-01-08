@@ -1,4 +1,4 @@
-ID,productName,description,price,category,image
-6,FJR1300ES,This is product 1,6999.00, Category 1,/media/FJR1300ES.png
-5,YZ125,This is product 2,8999.00,Category 2,/media/YZ125.png
-4,YZF-R7,This is product 3,7499.00,Category 3,/media/YZF-R7.png
+productID,productName,description,price,category,image,productModel,productBrand,productYear,productColor,productSize,productCondition
+6,FJR1300ES,This is product 1,6999.00,Category 1,/media/FJR1300ES.png,Model 1,Brand 1,2022,Red,Medium,New
+5,YZ125,This is product 2,8999.00,Category 2,/media/YZ125.png,Model 2,Brand 2,2021,Blue,Large,Used
+4,YZF-R7,This is product 3,7499.00,Category 3,/media/YZF-R7.png,Model 3,Brand 3,2020,Green,Small,New

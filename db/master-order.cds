@@ -1,6 +1,6 @@
 namespace my.motorsport;
 using { Currency, Country, custom.managed, sap } from './common';
-using {my.motorsport.Product as Product} from '../db/master-data';
+using {my.motorsport.Product as Product } from '../db/master-data';
 
 
 entity OrderTemplate {

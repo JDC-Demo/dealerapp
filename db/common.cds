@@ -1,5 +1,6 @@
 using { sap, managed } from '@sap/cds/common';
 
+@cds.autoexpose @readonly
 extend sap.common.Currencies with {
   // Currencies.code = ISO 4217 alphabetic three-letter code
   // with the first two letters being equal to ISO 3166 alphabetic country codes

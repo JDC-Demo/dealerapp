@@ -1,21 +1,21 @@
-customerID;firstName;lastName;title;street;postalCode;city;countryCode_code;phoneNumber;eMailAddress
-000023;John;Doe;Mr.;123 Main St;12345;Anytown;US;+1-123-4567890;john.doe@example.com
-000024;Jane;Doe;Ms.;456 Market St;67890;Anycity;US;+1-098-7654321;jane.doe@example.com
-000025;Jim;Smith;Mr.;789 Broadway St;12345;Anytown;US;+1-111-2223333;jim.smith@example.com
-000026;Jill;Johnson;Ms.;321 Oak St;67890;Anycity;US;+1-999-8887777;jill.johnson@example.com
-000027;Joe;Brown;Mr.;123 Elm St;12345;Anytown;US;+1-555-6667777;joe.brown@example.com
-000028;Julie;Williams;Ms.;456 Pine St;67890;Anycity;US;+1-444-5556666;julie.williams@example.com
-000029;Jack;Davis;Mr.;789 Maple St;12345;Anytown;US;+1-333-4445555;jack.davis@example.com
-000030;Jessica;Miller;Ms.;321 Cedar St;67890;Anycity;US;+1-222-3334444;jessica.miller@example.com
-000031;Jerry;Wilson;Mr.;123 Birch St;12345;Anytown;US;+1-111-2223333;jerry.wilson@example.com
-000032;Jennifer;Moore;Ms.;456 Walnut St;67890;Anycity;US;+1-999-8887777;jennifer.moore@example.com
-000033;Jeff;Taylor;Mr.;789 Chestnut St;12345;Anytown;US;+1-777-6665555;jeff.taylor@example.com
-000034;Janet;Anderson;Ms.;321 Spruce St;67890;Anycity;US;+1-555-4443333;janet.anderson@example.com
-000035;Jacob;Thomas;Mr.;123 Fir St;12345;Anytown;US;+1-333-2221111;jacob.thomas@example.com
-000036;Jasmine;Jackson;Ms.;456 Hemlock St;67890;Anycity;US;+1-111-9998888;jasmine.jackson@example.com
-000037;Jeremy;White;Mr.;789 Pine St;12345;Anytown;US;+1-888-7776666;jeremy.white@example.com
-000038;Jenna;Harris;Ms.;321 Maple St;67890;Anycity;US;+1-666-5554444;jenna.harris@example.com
-000039;Jason;Martin;Mr.;123 Cedar St;12345;Anytown;US;+1-444-3332222;jason.martin@example.com
-000040;Jill;Thompson;Ms.;456 Birch St;67890;Anycity;US;+1-222-1119999;jill.thompson@example.com
-000041;Justin;Garcia;Mr.;789 Walnut St;12345;Anytown;US;+1-999-8887777;justin.garcia@example.com
-000042;Julia;Martinez;Ms.;321 Chestnut St;67890;Anycity;US;+1-777-6665555;julia.martinez@example.com
+customerID,firstName,lastName,title,eMailAddress,phoneNumber,street,city,countryCode_code,postalCode,companyName,companyAddress
+000023,John,Doe,Mr.,john.doe@example.com,1234567890,123 Main St,Anytown,US,12345,Acme Corp,456 Market St
+000024,Jane,Doe,Ms.,jane.doe@example.com,0987654321,456 Market St,Anytown,US,12345,Widget Inc,123 Main St
+000025,Jim,Smith,Mr.,jim.smith@example.com,1112223333,789 Broadway St,Anycity,US,67890,Gadget Co,789 Broadway St
+000026,Jill,Johnson,Ms.,jill.johnson@example.com,9998887777,321 Oak St,Anycity,US,67890,Tech Corp,321 Oak St
+000027,Joe,Brown,Mr.,joe.brown@example.com,5556667777,123 Elm St,Anytown,US,12345,Innovate Corp,123 Elm St
+000028,Julie,Williams,Ms.,julie.williams@example.com,4445556666,456 Pine St,Anycity,US,67890,Create Inc,456 Pine St
+000029,Jack,Davis,Mr.,jack.davis@example.com,3334445555,789 Maple St,Anytown,US,12345,Develop Co,789 Maple St
+000030,Jessica,Miller,Ms.,jessica.miller@example.com,2223334444,321 Cedar St,Anycity,US,67890,Design Corp,321 Cedar St
+000031,Jerry,Wilson,Mr.,jerry.wilson@example.com,1112223333,123 Birch St,Anytown,US,12345,Invent Corp,123 Birch St
+000032,Jennifer,Moore,Ms.,jennifer.moore@example.com,9998887777,456 Walnut St,Anycity,US,67890,Produce Inc,456 Walnut St
+000033,Jeff,Taylor,Mr.,jeff.taylor@example.com,7776665555,789 Chestnut St,Anytown,US,12345,Generate Co,789 Chestnut St
+000034,Janet,Anderson,Ms.,janet.anderson@example.com,5554443333,321 Spruce St,Anycity,US,67890,Create Corp,321 Spruce St
+000035,Jacob,Thomas,Mr.,jacob.thomas@example.com,3332221111,123 Fir St,Anytown,US,12345,Innovate Inc,123 Fir St
+000036,Jasmine,Jackson,Ms.,jasmine.jackson@example.com,1119998888,456 Hemlock St,Anycity,US,67890,Develop Co,456 Hemlock St
+000037,Jeremy,White,Mr.,jeremy.white@example.com,8887776666,789 Pine St,Anytown,US,12345,Design Corp,789 Pine St
+000038,Jenna,Harris,Ms.,jenna.harris@example.com,6665554444,321 Maple St,Anycity,US,67890,Invent Corp,321 Maple St
+000039,Jason,Martin,Mr.,jason.martin@example.com,4443332222,123 Cedar St,Anytown,US,12345,Produce Inc,123 Cedar St
+000040,Jill,Thompson,Ms.,jill.thompson@example.com,2221119999,456 Birch St,Anycity,US,67890,Generate Co,456 Birch St
+000041,Justin,Garcia,Mr.,justin.garcia@example.com,9998887777,789 Walnut St,Anytown,US,12345,Create Corp,789 Walnut St
+000042,Julia,Martinez,Ms.,julia.martinez@example.com,7776665555,321 Chestnut St,Anycity,US,67890,Innovate Inc,321 Chestnut St

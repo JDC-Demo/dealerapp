@@ -7,15 +7,17 @@ annotate schema.Order with @title: '{i18n>Order}' {
 
   orderUUID   @UI.Hidden;
   orderID     @title: '{i18n>OrderID}';
-  to_Customer  @title: '{i18n>CustomerID}';
+  description @title: '{i18n>Description}';
+  to_Customer  @title: '{i18n>CustomerID}' @Common.Text: to_Customer.companyName;
   status      @title: '{i18n>Status}';
   totalAmount @title: '{i18n>TotalAmount}' @Measures.ISOCurrency: currencyCode_code;
   orderDate   @title: '{i18n>OrderDate}';
-
+  orderedBy   @title: '{i18n>OrderedBy}';
   to_Items @UI.Hidden;
 
 
   paymentMethod @title: '{i18n>PaymentMethod}';
+  paymentDate @title: '{i18n>PaymentDate}';
   shippingMethod @title: '{i18n>ShippingMethod}';
   trackingNumber @title: '{i18n>TrackingNumber}';
   estimatedDeliveryDate @title: '{i18n>EstimatedDeliveryDate}';
@@ -25,8 +27,7 @@ annotate schema.Order with @title: '{i18n>Order}' {
   tax @title: '{i18n>Tax}';
   deliveryContactNumber @title: '{i18n>DeliveryContactNumber}';
   deliveryInstructions @title: '{i18n>DeliveryInstructions}';
-  isPaid @title: '{i18n>IsPaid}';
-  paymentDate @title: '{i18n>PaymentDate}';
+  isPaid @title: '{i18n>IsPaid}'; 
   cancellationReason @title: '{i18n>CancellationReason}';
 
 }

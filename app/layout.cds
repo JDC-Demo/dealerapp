@@ -8,7 +8,7 @@ UI.HeaderInfo : {
   TypeName : 'Order',
   TypeNamePlural : 'Orders ',
   Title : { Value : orderID },
-  Description : { Value : to_Customer_customerID }
+  Description : { Value : description }
 });
 
 annotate OrderService.Orders with @(
@@ -30,27 +30,26 @@ annotate OrderService.Orders with @(
 annotate OrderService.Orders with @(
   UI.LineItem : [
     { Value : orderID },
-    { Value : to_Customer_customerID,   ![@UI.Importance]: #High },
+    { Value : to_Customer.companyName,   ![@UI.Importance]: #High },
+    { Value : description },
     { Value : status, Label : 'Status' ,  ![@UI.Importance]: #High },
-    { Value : totalAmount, Label : 'Total Amount' },
-  //  { Value : currencyCode, Label : 'Currency' },
+    { Value : totalAmount ,  ![@UI.Importance]: #High}, 
     { Value : estimatedDeliveryDate, Label : 'Estimated Delivery Date' },
-    { Value : isPaid, Label : 'Is Paid?' },
-    { Value : orderedBy, Label : 'Order Placed By' },
-    { Value : orderDate, Label : 'Ordered Date' },
-    { Value : description, Label : 'Description' },
-    { Value : paymentMethod, Label : 'Payment Method' },
-    { Value : shippingMethod, Label : 'Shipping Method' },
-    { Value : trackingNumber, Label : 'Tracking Number' },
-    { Value : orderNotes, Label : 'Order Notes' },
-    { Value : billingAddress, Label : 'Billing Address' },
-    { Value : discount, Label : 'Discount' },
-    { Value : tax, Label : 'Tax' },
-    { Value : deliveryContactNumber, Label : 'Delivery Contact Number' },
-    { Value : deliveryInstructions, Label : 'Delivery Instructions' },
-    { Value : deliveryAddress, Label : 'Delivery Address' },
-    { Value : paymentDate, Label : 'Payment Date' },
-    { Value : cancellationReason, Label : 'Cancellation Reason' } 
+    { Value : isPaid},
+    { Value : orderedBy },
+    { Value : orderDate },
+    { Value : paymentMethod },
+    { Value : shippingMethod },
+    { Value : trackingNumber },
+    { Value : orderNotes},
+    { Value : billingAddress},
+    { Value : discount },
+    { Value : tax },
+    { Value : deliveryContactNumber },
+    { Value : deliveryInstructions },
+    { Value : deliveryAddress },
+    { Value : paymentDate},
+    { Value : cancellationReason} 
   ]);
 
 
@@ -99,11 +98,11 @@ annotate OrderService.Orders with @(
   UI.FieldGroup #GeneralInformation : {
     Data : [ 
       { Value : orderID  },
-      { Value : description, Label : 'Description' },
-      { Value : to_Customer_customerID, Label : 'Customer ID' },
-      { Value : orderedBy, Label : 'Order Placed By' },
-      { Value : orderDate, Label : 'Ordered Date' },
-      { Value : status, Label : 'Status' }
+      { Value : description },
+      { Value : to_Customer_customerID },
+      { Value : orderedBy},
+      { Value : orderDate },
+      { Value : status }
     ]
   });
 

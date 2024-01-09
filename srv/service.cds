@@ -7,7 +7,8 @@ using { my.motorsport as masterdataschema } from '../db/master-data';
 service OrderService {
   
   @(restrict: [
-    { grant: 'READ', to: 'authenticated-user'},
+    { grant: ['*'], to: 'authenticated-user'},
+  //  { grant: 'READ', to: 'authenticated-user'},
     { grant: ['*'], to: 'admin'}
   ])
   entity Orders as projection on orderschema.Order;

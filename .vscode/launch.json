@@ -1,20 +1,20 @@
 {
-  "version": "0.2.0",
-  "configurations": [
-    {
-      "name": "cds serve",
-      "request": "launch",
-      "type": "node",
-      "cwd": "${workspaceFolder}",
-      "runtimeExecutable": "cds",
-      "args": [
-        "serve",
-        "--with-mocks",
-        "--in-memory?"
-      ],
-      "skipFiles": [
-        "<node_internals>/**"
-      ]
-    }
-  ]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Debug CAP DealerApp",
+            "runtimeExecutable": "npx",
+            "runtimeArgs": [
+                "cds",
+                "watch"
+            ],
+            "port": 9229,
+            "timeout": 10000,
+            "console": "integratedTerminal",
+            "internalConsoleOptions": "neverOpen",
+            "autoAttachChildProcesses": true
+        }
+    ]
 }

@@ -7,7 +7,7 @@ using { my.motorsport.Product as Product ,
 
 entity Order : managed  {
   key orderUUID :UUID @odata.Type:'Edm.String';
-  orderID       : Integer @readonly default 0;
+  orderID       : Integer @readonly @Core.Computed;
   to_Customer   :  Association to Customer;
   orderDate     : Date;
   orderedBy     : String; // The name of the person who placed the order
@@ -36,13 +36,12 @@ entity Order : managed  {
 entity OrderItem : managed {
   key itemUUID: UUID @odata.Type:'Edm.String';
   itemID: Integer @Core.Computed;
-  to_Order: Association to Order;
   to_Product: Association to Product;
   quantity: Integer;
-  netPrice: Decimal(10, 2) @Core.Computed;
-  currencyCode   : Currency;
 
 // pricing
+  netPrice: Decimal(10, 2) @Core.Computed;
+  currencyCode   : Currency @Core.Computed;
   discount : Decimal(10, 2); // Any discount applied to the order item
   tax: Decimal(10, 2); // Tax applied to the order item
   totalAmount: Decimal(10, 2) @Core.Computed;
@@ -71,4 +70,5 @@ entity OrderItem : managed {
   productColor: String; // The color of the motorsport product
   productSize: String; // The size of the motorsport product (could be relevant for gear, helmets, etc.)
   productCondition: String; // The condition of the motorsport product (new, used, etc.)
+  to_Order: Association to Order;
 }

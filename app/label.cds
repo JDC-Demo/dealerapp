@@ -63,6 +63,8 @@ annotate masterdata.Product with @title: '{i18n>Product}' {
   productColor @title: '{i18n>ProductColor}';
   productSize @title: '{i18n>ProductSize}';
   productName @title: '{i18n>ProductName}';
+  productDescription @title: '{i18n>ProductDescription}';
+  productCategory @title: '{i18n>ProductCategory}';
   price @title: '{i18n>Price}' @Measures.ISOCurrency: currencyCode_code;
   productCondition @title: '{i18n>ProductCondition}';
 }
@@ -83,3 +85,8 @@ annotate masterdata.Customer with @title: '{i18n>Customer}' {
   companyName @title: '{i18n>CompanyName}'; 
   companyAddress @title: '{i18n>CompanyAddress}'; 
 }
+
+annotate schema.OrderStatus with {
+  code @Common.Text: name @Common.TextArrangement: #TextOnly;
+};
+

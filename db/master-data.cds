@@ -2,13 +2,13 @@ namespace my.motorsport;
 
 using { Currency, Country, custom.managed,  sap } from '../db/common';
 // ensure all masterdata entities are available to clients
-@cds.autoexpose @readonly
+@cds.autoexpose //@readonly
 aspect MasterData {}
  
 entity Product : MasterData ,managed{
-  key productID: String @readonly @visible @title;
+  key productID: Integer @readonly @Core.Computed;
   productName: String;
-  description: String;
+  productDescription: String;
   price: Decimal(10, 2); 
   currencyCode   : Currency;
   category: String; 
@@ -20,11 +20,12 @@ entity Product : MasterData ,managed{
   productColor: String; // The color of the motorsport product
   productSize: String; // The size of the motorsport product (could be relevant for gear, helmets, etc.)
   productCondition: String; // The condition of the motorsport product (new, used, etc.)
-
+  stockQuantity: Integer; // The quantity of the motorsport product in stock
+  productCategory: String; // The category of the motorsport product (gear, helmets, etc.)
 }
 
 entity Customer :  MasterData {
-  key customerID : String(6);
+  key customerID : Integer @readonly @Core.Computed;
   firstName      : String(40);
   lastName       : String(40);
   title          : String(10);

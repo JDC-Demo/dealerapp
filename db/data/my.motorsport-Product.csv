@@ -1,4 +1,4 @@
-productID,productName,description,price,category,image,productModel,productBrand,productYear,productColor,productSize,productCondition
-6,FJR1300ES,This is product 1,6999.00,Category 1,/media/FJR1300ES.png,Model 1,Brand 1,2022,Red,Medium,New
-5,YZ125,This is product 2,8999.00,Category 2,/media/YZ125.png,Model 2,Brand 2,2021,Blue,Large,Used
-4,YZF-R7,This is product 3,7499.00,Category 3,/media/YZF-R7.png,Model 3,Brand 3,2020,Green,Small,New
+productID,productName,productDescription,price,productCategory,Image,productModel,productBrand,productYear,productColor,productSize,productCondition,stockQuantity
+6,"Yamaha FJR1300ES","A sport touring motorcycle with advanced features and a smooth, powerful inline 4-cylinder engine.",6999.00,"Sport Touring","/media/FJR1300ES.png","FJR1300ES","Yamaha",2022,"Red","Medium","New",15
+5,"Yamaha YZ125","A lightweight, compact dirt bike that delivers a high level of fun and performance.",8999.00,"Dirt Bike","/media/YZ125.png","YZ125","Yamaha",2021,"Blue","Large","Used",10
+4,"Yamaha YZF-R7","A supersport motorcycle that offers a balance of power and handling for the track or street.",7499.00,"Supersport","/media/YZF-R7.png","YZF-R7","Yamaha",2020,"Green","Small","New",20

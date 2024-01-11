@@ -9,9 +9,9 @@ entity Order : managed  {
   key orderUUID :UUID @odata.Type:'Edm.String';
   orderID       : Integer @readonly @Core.Computed;
   to_Customer   :  Association to Customer;
-  orderDate     : Date;
+  orderDate     : Date @Core.Computed;
   orderedBy     : String; // The name of the person who placed the order
-  status         : String;
+  orderStatus    : Association to OrderStatus @readonly;
   deliveryAddress: String; 
   totalAmount     : Decimal(10, 2) @Core.Computed;
   currencyCode   : Currency;
@@ -25,7 +25,7 @@ entity Order : managed  {
   orderNotes: String(2048); // Any additional notes or instructions for the order
   billingAddress: String; // The address where the bill is sent
   discount: Decimal(10, 2); // Any discount applied to the order
-  tax: Decimal(10, 2); // Tax applied to the order
+  tax: Decimal(10, 2) @Core.Computed; // Tax applied to the order
   deliveryContactNumber: String; // Contact number for delivery-related communication
   deliveryInstructions: String(2048); // Any specific instructions for delivery
   isPaid: Boolean; // Whether the order has been paid or not
@@ -37,9 +37,10 @@ entity OrderItem : managed {
   key itemUUID: UUID @odata.Type:'Edm.String';
   itemID: Integer @Core.Computed;
   to_Product: Association to Product;
-  quantity: Integer;
+  quantity: Integer @mandatory;
 
 // pricing
+  unitPrice: Decimal(10, 2) @Core.Computed;
   netPrice: Decimal(10, 2) @Core.Computed;
   currencyCode   : Currency @Core.Computed;
   discount : Decimal(10, 2); // Any discount applied to the order item
@@ -66,9 +67,23 @@ entity OrderItem : managed {
     // Additional fields
   productModel: String @Core.Computed; // The model of the motorsport product
   productBrand: String @Core.Computed; // The brand of the motorsport product
-  productYear: Integer @Core.Computed; // The year of the motorsport product
-  productColor: String; // The color of the motorsport product
+  productYear: String ; // The year of the motorsport product
+  productColor: String ; // The color of the motorsport product
   productSize: String; // The size of the motorsport product (could be relevant for gear, helmets, etc.)
-  productCondition: String; // The condition of the motorsport product (new, used, etc.)
+  productCondition: String; // The condition of the motorsport product (new, used, etc.)@
   to_Order: Association to Order;
 }
+
+entity OrderStatus : CodeList {
+  key code : String enum {
+    Open     = 'O';
+    InProcess = 'P';
+    Accepted = 'A';
+    Canceled = 'X';
+  } default 'O'; //> will be used for foreign keys as well
+  criticality : Integer; //  2: yellow colour,  3: green colour, 0: unknown
+  fieldControl: Integer @odata.Type:'Edm.Byte'; // 1: #ReadOnly, 7: #Mandatory
+  createDeleteHidden: Boolean;
+  insertDeleteRestriction: Boolean; // = NOT createDeleteHidden
+}
+

@@ -12,6 +12,24 @@ service OrderService {
   ])
   entity Orders as projection on orderschema.Order;
   entity OrderItems as projection on orderschema.OrderItem;
+};
+ 
+ 
+service CustomerService {
+  @(restrict: [
+    { grant: ['*'], to: 'authenticated-user'},
+    { grant: ['*'], to: 'admin'}
+  ])
+  entity Customers as projection on masterdataschema.Customer;
 }
- 
- 
+
+service ProductService {
+  @(restrict: [
+    { grant: ['*'], to: 'authenticated-user'},
+    { grant: ['*'], to: 'admin'}
+  ])
+  entity Products as projection on masterdataschema.Product;
+
+  
+
+}

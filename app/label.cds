@@ -6,10 +6,10 @@ using { Currency,custom.managed, sap.common.CodeList } from '../db/common';
 annotate schema.Order with @title: '{i18n>Order}' {
 
   orderUUID   @UI.Hidden;
-  orderID     @title: '{i18n>OrderID}';
+  orderID     @title: '{i18n>OrderID}' @Common.Text: description;
   description @title: '{i18n>Description}';
   to_Customer  @title: '{i18n>CustomerID}' @Common.Text: to_Customer.companyName;
-  status      @title: '{i18n>Status}';
+  orderStatus  @title: '{i18n>Status}' @Common.Text: orderStatus.name @Common.TextArrangement: #TextOnly;
   totalAmount @title: '{i18n>TotalAmount}' @Measures.ISOCurrency: currencyCode_code;
   orderDate   @title: '{i18n>OrderDate}';
   orderedBy   @title: '{i18n>OrderedBy}';
@@ -23,8 +23,9 @@ annotate schema.Order with @title: '{i18n>Order}' {
   estimatedDeliveryDate @title: '{i18n>EstimatedDeliveryDate}';
   orderNotes @title: '{i18n>OrderNotes}';
   billingAddress @title: '{i18n>BillingAddress}';
-  discount @title: '{i18n>Discount}';
-  tax @title: '{i18n>Tax}';
+  discount @title: '{i18n>Discount}' @Measures.ISOCurrency: currencyCode_code;
+  tax @title: '{i18n>Tax}'@Measures.ISOCurrency: currencyCode_code;
+  deliveryAddress @title: '{i18n>DeliveryAddress}';
   deliveryContactNumber @title: '{i18n>DeliveryContactNumber}';
   deliveryInstructions @title: '{i18n>DeliveryInstructions}';
   isPaid @title: '{i18n>IsPaid}'; 
@@ -37,8 +38,9 @@ annotate schema.OrderItem with @title: '{i18n>OrderItem}' {
   itemUUID @UI.Hidden;
   itemID @title: '{i18n>ItemID}';
   to_Order @UI.Hidden;
-  to_Product @title: '{i18n>ProductID}' @Common.Text: to_Product.productID;
+  to_Product @title: '{i18n>ProductID}' @Common.Text: to_Product.productName;
   quantity @title: '{i18n>Quantity}';
+  unitPrice @title: '{i18n>UnitPrice}' @Measures.ISOCurrency: currencyCode_code;
   netPrice @title: '{i18n>NetPrice}'  @Measures.ISOCurrency: currencyCode_code;
   currencyCode @title: '{i18n>CurrencyCode}';
   productModel @title: '{i18n>ProductModel}';

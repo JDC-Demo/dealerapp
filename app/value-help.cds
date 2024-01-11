@@ -44,10 +44,15 @@ annotate schema.OrderItem with {
                 $Type: 'Common.ValueListParameteDisplayOnly',
                 ValueListProperty: 'productName' 
             },
+
+            {
+                $Type: 'Common.ValueListParameterDisplayOnly',
+                ValueListProperty: 'price'
+            } ,
             {
                 $Type: 'Common.ValueListParameterDisplayOnly',
                 ValueListProperty: 'description' 
-            } 
+            }
                  ]
     };
      

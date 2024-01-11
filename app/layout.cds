@@ -32,7 +32,7 @@ annotate OrderService.Orders with @(
     { Value : orderID },
     { Value : to_Customer.companyName,   ![@UI.Importance]: #High },
     { Value : description },
-    { Value : status, Label : 'Status' ,  ![@UI.Importance]: #High },
+    { Value : orderStatus_code,  ![@UI.Importance]: #High },
     { Value : totalAmount ,  ![@UI.Importance]: #High}, 
     { Value : estimatedDeliveryDate, Label : 'Estimated Delivery Date' },
     { Value : isPaid},
@@ -90,6 +90,12 @@ annotate OrderService.Orders with @(
         ID     : 'OrderCancellationDetails',
         Target : '@UI.FieldGroup#CancellationDetails',
         Label  : 'Cancellation'    
+      },
+            {  // Administrativedata
+        $Type  : 'UI.ReferenceFacet',
+        ID     : 'OrderAdministrativedata',
+        Target : '@UI.FieldGroup#Administrativedata',
+        Label  : 'Administrative Data'    
       }
 
   ]);
@@ -97,19 +103,22 @@ annotate OrderService.Orders with @(
 annotate OrderService.Orders with @(
   UI.FieldGroup #GeneralInformation : {
     Data : [ 
-      { Value : orderID  },
-      { Value : description },
+   //   { Value : orderID  },
+      { Value : description},
       { Value : to_Customer_customerID },
       { Value : orderedBy},
       { Value : orderDate },
-      { Value : status }
+      { Value : totalAmount },
+      { Value : discount},
+      { Value : tax },
+      { Value : orderStatus_code },
+      { Value : orderNotes }
     ]
   });
 
 annotate OrderService.Orders with @(
   UI.FieldGroup #PaymentDetails : {
     Data : [ 
-      { Value : totalAmount },
       { Value : paymentMethod },
       { Value : isPaid },
       { Value : paymentDate }
@@ -131,9 +140,7 @@ annotate OrderService.Orders with @(
 annotate OrderService.Orders with @(
   UI.FieldGroup #BillingDetails : {
     Data : [ 
-      { Value : billingAddress, },
-      { Value : discount},
-      { Value : tax }
+      { Value : billingAddress, }
     ]
   });
 
@@ -142,6 +149,17 @@ annotate OrderService.Orders with @(
   UI.FieldGroup #CancellationDetails : {
     Data : [ 
       { Value : cancellationReason}
+    ]
+  });
+
+annotate OrderService.Orders with @(
+  //UI.Identification : [ {value : ID, label : 'Order No.'} ],
+  UI.FieldGroup #Administrativedata : {
+    Data : [ 
+      { Value : createdAt},
+      { Value : createdBy},
+      { Value : LastChangedAt},
+      { Value : LastChangedBy}
     ]
   });
 
@@ -165,10 +183,11 @@ annotate OrderService.OrderItems  with @UI : {
   LineItem : [
     { Value : to_Product.image, Label : ' ', ![@UI.Importance]: #High},
     { Value : itemID,  ![@UI.Importance]: #High},
-    { Value : to_Product.productID, ![@UI.Importance]: #High },
-    { Value : to_Product.productName, ![@UI.Importance]: #High},
+    { Value : to_Product_productID, ![@UI.Importance]: #High },
+   // { Value : to_Product.productName, ![@UI.Importance]: #High},
     { Value : quantity,  ![@UI.Importance]: #High},
-    { Value : to_Product.price,  ![@UI.Importance]: #High},
+ //   { Value : to_Product.price,  ![@UI.Importance]: #High},
+    { Value : unitPrice,  ![@UI.Importance]: #High},
     { Value : netPrice , ![@UI.Importance]: #High},
     { Value : to_Product.description},
     { Value : productModel },

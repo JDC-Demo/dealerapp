@@ -9,7 +9,10 @@
     "@sap-cloud-sdk/resilience": "^3.10.0",
     "@sap/cds": "^7",
     "express": "^4",
-    "sqlite": "^5.1.1"
+    "sqlite": "^5.1.1",
+    "@sap/cds-hana": "^2",
+    "@sap/xssec": "^3",
+    "passport": "^0"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1",
@@ -46,6 +49,11 @@
       "OP_API_SALES_ORDER_SRV_0001": {
         "kind": "odata-v2",
         "model": "srv/external/OP_API_SALES_ORDER_SRV_0001"
+      },
+      "db": "hana",
+      "[production]": {
+        "db": "hana",
+        "auth": "xsuaa"
       }
     }
   },

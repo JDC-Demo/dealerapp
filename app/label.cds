@@ -23,7 +23,7 @@ annotate schema.Order with @title: '{i18n>Order}' {
   estimatedDeliveryDate @title: '{i18n>EstimatedDeliveryDate}';
   orderNotes @title: '{i18n>OrderNotes}';
   billingAddress @title: '{i18n>BillingAddress}';
-  discount @title: '{i18n>Discount}' @Measures.ISOCurrency: currencyCode_code;
+  discount @title: '{i18n>Discount}' @Measures.ISOCurrency: currencyCode_code @readonly: true;
   tax @title: '{i18n>Tax}'@Measures.ISOCurrency: currencyCode_code;
   deliveryAddress @title: '{i18n>DeliveryAddress}';
   deliveryContactNumber @title: '{i18n>DeliveryContactNumber}';
@@ -67,6 +67,7 @@ annotate masterdata.Product with @title: '{i18n>Product}' {
   productCategory @title: '{i18n>ProductCategory}';
   price @title: '{i18n>Price}' @Measures.ISOCurrency: currencyCode_code;
   productCondition @title: '{i18n>ProductCondition}';
+  stockQuantity @title: '{i18n>StockQuantity}';
 }
 
 annotate masterdata.Customer with @title: '{i18n>Customer}' {
@@ -90,3 +91,34 @@ annotate schema.OrderStatus with {
   code @Common.Text: name @Common.TextArrangement: #TextOnly;
 };
 
+
+annotate schema.OrderTemplate with @title: '{i18n>OrderTemplate}' {
+
+  orderUUID   @UI.Hidden;
+  orderID     @title: '{i18n>OrderID}' @Common.Text: description;
+  description @title: '{i18n>Description}';
+  totalAmount @title: '{i18n>TotalAmount}' @Measures.ISOCurrency: currencyCode_code;
+  to_Items @UI.Hidden;
+  orderNotes @title: '{i18n>OrderNotes}';
+  
+  discount @title: '{i18n>Discount}' @Measures.ISOCurrency: currencyCode_code @readonly: true;
+  tax @title: '{i18n>Tax}'@Measures.ISOCurrency: currencyCode_code;
+}
+
+annotate schema.OrderTemplateItem with @title: '{i18n>OrderTemplateItem}' {
+
+  itemUUID @UI.Hidden;
+  itemID @title: '{i18n>ItemID}';
+  to_Order @UI.Hidden;
+  to_Product @title: '{i18n>ProductID}' @Common.Text: to_Product.productName;
+  quantity @title: '{i18n>Quantity}';
+  unitPrice @title: '{i18n>UnitPrice}' @Measures.ISOCurrency: currencyCode_code;
+  netPrice @title: '{i18n>NetPrice}'  @Measures.ISOCurrency: currencyCode_code;
+  currencyCode @title: '{i18n>CurrencyCode}';
+  productModel @title: '{i18n>ProductModel}';
+  productBrand @title: '{i18n>ProductBrand}';
+  productYear @title: '{i18n>ProductYear}';
+  productColor @title: '{i18n>ProductColor}';
+  productSize @title: '{i18n>ProductSize}';
+  productCondition @title: '{i18n>ProductCondition}'; 
+}

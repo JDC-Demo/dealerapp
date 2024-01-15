@@ -14,11 +14,11 @@ annotate schema.Order with {
             },
             {
                 $Type: 'Common.ValueListParameteDisplayOnly',
-                ValueListProperty: 'firstName' 
+                ValueListProperty: 'companyName' 
             },
             {
                 $Type: 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty: 'lastName' 
+                ValueListProperty: 'eMailAddress' 
             } ,
             {
                 $Type: 'Common.ValueListParameterDisplayOnly',
@@ -30,6 +30,51 @@ annotate schema.Order with {
 
 
 annotate schema.OrderItem with {
+
+    to_Product @Common.ValueList: {
+        CollectionPath: 'ProductCatalogue',
+        Label: 'Product ID',
+        Parameters : [
+            {
+                $Type: 'Common.ValueListParameterInOut',
+                LocalDataProperty : to_Product_productID,
+                ValueListProperty: 'productID' 
+            },
+            {
+                $Type: 'Common.ValueListParameteDisplayOnly',
+                ValueListProperty: 'productName' 
+            },
+
+            {
+                $Type: 'Common.ValueListParameterDisplayOnly',
+                ValueListProperty: 'price'
+            } ,
+            {
+                $Type: 'Common.ValueListParameterDisplayOnly',
+                ValueListProperty: 'productCategory' 
+            } ,
+            {
+                $Type: 'Common.ValueListParameterDisplayOnly',
+                ValueListProperty: 'stockQuantity' 
+            }
+                 ]
+    };
+     
+    currencyCode @Common.ValueList: {
+    CollectionPath : 'Currencies',
+    Label : '',
+    Parameters : [
+      {$Type: 'Common.ValueListParameterInOut', LocalDataProperty: currencyCode_code, ValueListProperty: 'code'},
+      {$Type: 'Common.ValueListParameterDisplayOnly', ValueListProperty: 'name'},
+      {$Type: 'Common.ValueListParameterDisplayOnly', ValueListProperty: 'descr'},
+      {$Type: 'Common.ValueListParameterDisplayOnly', ValueListProperty: 'symbol'},
+      {$Type: 'Common.ValueListParameterDisplayOnly', ValueListProperty: 'minor'}
+    ]
+  };
+
+}
+
+annotate schema.OrderTemplateItem with {
 
     to_Product @Common.ValueList: {
         CollectionPath: 'Product',

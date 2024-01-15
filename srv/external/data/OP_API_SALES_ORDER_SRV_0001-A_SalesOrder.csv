@@ -1,0 +1,4 @@
+SalesOrder,SalesOrderType,SalesOrganization,DistributionChannel,OrganizationDivision,ExternalDocumentID,SalesOrderDate,ShippingType,TotalNetAmount,ShippingCondition
+SO-0001,OR,SO-ORG-0001,DC-0001,OD-0001,ED-0001,2022-01-01,ST-0001,100.00,SC-0001
+SO-0002,OR,SO-ORG-0002,DC-0002,OD-0002,ED-0002,2022-01-02,ST-0002,200.00,SC-0002
+SO-0003,OR,SO-ORG-0003,DC-0003,OD-0003,ED-0003,2022-01-03,ST-0003,300.00,SC-0003

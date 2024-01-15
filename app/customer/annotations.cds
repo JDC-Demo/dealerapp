@@ -1,1 +1,0 @@
-using CustomerService as service from '../../srv/service';

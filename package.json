@@ -6,6 +6,7 @@
   "license": "UNLICENSED",
   "private": true,
   "dependencies": {
+    "@sap-cloud-sdk/resilience": "^3.10.0",
     "@sap/cds": "^7",
     "express": "^4",
     "sqlite": "^5.1.1"
@@ -14,7 +15,7 @@
     "@cap-js/sqlite": "^1",
     "@sap/ux-specification": "^1.120.1"
   },
-  "cds": { 
+  "cds": {
     "requires": {
       "[development]": {
         "auth": {
@@ -41,14 +42,36 @@
             }
           }
         }
+      },
+      "OP_API_SALES_ORDER_SRV_0001": {
+        "kind": "odata-v2",
+        "model": "srv/external/OP_API_SALES_ORDER_SRV_0001"
       }
     }
   },
   "scripts": {
     "start": "cds-serve",
-    "watch-dearlerapp": "cds watch --open dearlerapp/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-dearlerapp": "cds watch --open dearlerapp/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-admin-dealer": "cds watch --open admin-dealer/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-admin-product": "cds watch --open admin-product/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-admin-templateorder": "cds watch --open admin-templateorder/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-dealerorder": "cds watch --open dealerorder/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-admin-dealers": "cds watch --open admin-dealers/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-admin-products": "cds watch --open admin-products/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-admin-ordertemplates": "cds watch --open admin-ordertemplates/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-ordertemplates": "cds watch --open ordertemplates/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-products": "cds watch --open products/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "sapux": [
-    "app/dearlerapp"
+    "app/dearlerapp",
+    "app/admin-dealer",
+    "app/admin-product",
+    "app/admin-templateorder",
+    "app/dealerorder",
+    "app/admin-dealers",
+    "app/admin-products",
+    "app/admin-ordertemplates",
+    "app/ordertemplates",
+    "app/products"
   ]
 }

@@ -2,7 +2,7 @@ using {OP_API_SALES_ORDER_SRV_0001 as external} from './external/OP_API_SALES_OR
 
 service BackendService {
 
-    entity SalesOrder as projection on external.A_SalesOrder{
+   @readonly entity SalesOrder as projection on external.A_SalesOrder{
         key SalesOrder ,
         SalesOrderType ,
         SalesOrganization,

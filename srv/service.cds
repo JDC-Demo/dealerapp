@@ -17,19 +17,29 @@ service OrderService {
   };
    entity OrderItems as projection on orderschema.OrderItem;
 
-  entity OrderTemplate as projection on orderschema.OrderTemplate actions {
+  @readonly   entity OrderTemplate as projection on orderschema.OrderTemplate actions {
      action addFromTemplateToOrder()  returns Orders;
        };
   entity OrderTemplateItem  as projection on orderschema.OrderTemplateItem; 
  
-  @ readonly  entity ProductCatalogue as projection on masterdataschema.Product actions {
+  @readonly  entity ProductCatalogue as projection on masterdataschema.Product actions {
     action addProductToOrder ();
   };
 
 };
 
 
- 
+service AdminService {
+    @(restrict: [
+    { grant: ['*'], to: 'authenticated-user'},
+    { grant: ['*'], to: 'admin'}
+
+  ])
+  entity Customers as projection on masterdataschema.Customer;
+  entity Products as projection on masterdataschema.Product;
+  entity OrderTemplate as projection on orderschema.OrderTemplate;
+  entity OrderTemplateItem  as projection on orderschema.OrderTemplateItem; 
+} 
  
 service CustomerService {
   @(restrict: [

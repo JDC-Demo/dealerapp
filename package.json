@@ -8,14 +8,15 @@
   "dependencies": {
     "@sap-cloud-sdk/resilience": "^3.10.0",
     "@sap/cds": "^7",
-    "express": "^4",
-    "sqlite": "^5.1.1",
     "@sap/cds-hana": "^2",
     "@sap/xssec": "^3",
-    "passport": "^0"
+    "express": "^4",
+    "passport": "^0",
+    "sqlite": "^5.1.1"
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1",
+    "@sap/hdi-deploy": "4.9.2",
     "@sap/ux-specification": "^1.120.1"
   },
   "cds": {
@@ -54,7 +55,8 @@
       "[production]": {
         "db": "hana",
         "auth": "xsuaa"
-      }
+      },
+      "auth": "xsuaa"
     }
   },
   "scripts": {

@@ -1,4 +1,6 @@
 {
+  "xsappname": "myhanaapp",
+  "tenant-mode": "dedicated", 
   "scopes": [
     {
       "name": "$XSAPPNAME.admin",
@@ -15,5 +17,14 @@
       ],
       "attribute-references": []
     }
-  ]
+  ],
+  "oauth2-configuration": {
+    "credential-types": [
+        "binding-secret",
+        "x509"
+    ],
+    "redirect-uris": [
+        "https://*.applicationstudio.cloud.sap/**"
+    ]
+}
 }

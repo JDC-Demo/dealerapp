@@ -1,9 +1,4 @@
 {
-  "authenticationMethod": "route",
-  "logout": {
-    "logoutEndpoint": "/app-logout",
-    "logoutPage": "/"
-  },
   "routes": [
     {
       "source": "^/app/(.*)$",
@@ -17,16 +12,10 @@
       "cacheControl": "no-cache, no-store, must-revalidate"
     },
     {
-      "source": "^/user-api(.*)",
-      "target": "$1",
-      "service": "sap-approuter-userapi"
-    },
-    {
       "source": "^/(.*)$",
       "target": "$1",
       "destination": "srv-api",
       "csrfProtection": true
     }
-  ],
-  "welcomeFile": "app/index.html"
+  ]
 }

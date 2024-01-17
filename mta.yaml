@@ -18,7 +18,6 @@ modules:
       buildpack: nodejs_buildpack
     build-parameters:
       builder: npm
-
     provides:
       - name: srv-api # required by consumers of CAP services (e.g. approuter)
         properties:
@@ -26,6 +25,9 @@ modules:
     requires:
       - name: dealerapp-auth
       - name: yamaha-hdi
+    build-parameters:
+      ignore:
+        - 'node_modules/**'
 
   - name: dealerapp
     type: approuter.nodejs
@@ -42,6 +44,9 @@ modules:
           url: ~{srv-url}
           forwardAuthToken: true
       - name: dealerapp-auth
+    build-parameters:
+      ignore:
+        - 'node_modules/**'
 
   - name: dealerapp-db-deployer
     type: hdb
@@ -61,6 +66,7 @@ resources:
       config:
         xsappname: dealerapp-${org}-${space}
         tenant-mode: dedicated
+
   - name: yamaha-hdi
     type: com.sap.xs.hdi-container
     parameters:

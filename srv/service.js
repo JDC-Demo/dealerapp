@@ -441,7 +441,7 @@ class ProductService extends cds.ApplicationService {
      * Reflect definitions from the service's CDS model
      */
         const { Products } = this.entities
-
+/*
         this.before('CREATE', 'Products', async req => {
             const { maxID } = await SELECT.one`max(productID) as maxID`.from(Products)
             if (!maxID) req.data.productID = 1
@@ -450,7 +450,7 @@ class ProductService extends cds.ApplicationService {
             }
 
         })
-
+*/
 
         return super.init()
     }
@@ -464,7 +464,7 @@ class CustomerService extends cds.ApplicationService {
     * Reflect definitions from the service's CDS model
     */
         const { Customers } = this.entities
-
+/*
         this.before('CREATE', 'Customers', async req => {
             const { maxID } = await SELECT.one`max(customerID) as maxID`.from(Customers)
             if (!maxID) req.data.customerID = 1
@@ -473,7 +473,7 @@ class CustomerService extends cds.ApplicationService {
             }
 
         })
-
+*/
 
         return super.init()
     }

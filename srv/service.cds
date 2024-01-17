@@ -5,13 +5,14 @@ using { my.motorsport as masterdataschema } from '../db/master-data';
 // import the extenal sales order APckeI service
 //using { OP_API_SALES_ORDER_SRV_0001 as external } from './external/OP_API_SALES_ORDER_SRV_0001';
 
+@requires: 'authenticated-user'  
 service OrderService {
-  
-  @(restrict: [
+
+  /* @(restrict: [
     { grant: ['*'], to: 'authenticated-user'}
   //  { grant: 'READ', to: 'authenticated-user'},
  //   { grant: ['*'], to: 'admin'}
-  ])
+  ]) */
   entity Orders as projection on orderschema.Order actions { 
     action createOrderByTemplate ();// returns Orders;
   };
@@ -28,13 +29,14 @@ service OrderService {
 
 };
 
-
+@requires: 'dealeradmin'  
 service AdminService {
-    @(restrict: [
+  /*  @(restrict: [
    // { grant: ['*'], to: 'authenticated-user'},
     { grant: ['*'], to: 'dealeradmin'}
 
   ])
+*/
   entity Customers as projection on masterdataschema.Customer;
   entity Products as projection on masterdataschema.Product;
   entity OrderTemplate as projection on orderschema.OrderTemplate;
@@ -42,20 +44,20 @@ service AdminService {
 } 
  
 service CustomerService {
-  @(restrict: [
-    { grant: ['*'], to: 'authenticated-user'},
+  /*@(restrict: [
+    { grant: ['READ'], to: 'authenticated-user'},
     { grant: ['*'], to: 'dealeradmin'}
 
-  ])
+  ]) */
   entity Customers as projection on masterdataschema.Customer;
 }
 
 service ProductService {
-  @(restrict: [
-    { grant: ['*'], to: 'authenticated-user'},
+/*  @(restrict: [
+    { grant: ['READ'], to: 'authenticated-user'},
     { grant: ['*'], to: 'dealeradmin'}
   ])
-
+*/
   
   entity Products as projection on masterdataschema.Product;
 

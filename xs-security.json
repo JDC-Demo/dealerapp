@@ -19,11 +19,9 @@
     }
   ],
   "oauth2-configuration": {
-    "credential-types": [
-      "binding-secret",
-      "x509"
-    ],
     "redirect-uris": [
+      "http://*.localhost:4004/**",
+      "https://*.hana.ondemand.com/**",
       "https://*.applicationstudio.cloud.sap/**"
     ]
   }

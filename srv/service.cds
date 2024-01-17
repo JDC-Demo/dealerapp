@@ -29,7 +29,7 @@ service OrderService {
 
 };
 
-@requires: 'dealeradmin'  
+//@requires: 'dealeradmin'  
 service AdminService {
   /*  @(restrict: [
    // { grant: ['*'], to: 'authenticated-user'},
@@ -39,7 +39,9 @@ service AdminService {
 */
   entity Customers as projection on masterdataschema.Customer;
   entity Products as projection on masterdataschema.Product;
-  entity OrderTemplate as projection on orderschema.OrderTemplate;
+  entity OrderTemplate as projection on orderschema.OrderTemplate actions {
+    action createOrderByTemplate() ;
+  };
   entity OrderTemplateItem  as projection on orderschema.OrderTemplateItem; 
 } 
  

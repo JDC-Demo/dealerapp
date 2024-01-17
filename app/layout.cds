@@ -168,7 +168,7 @@ annotate OrderService.Orders with @(
 
  
 annotate OrderService.OrderItems  with @UI : {
-    Identification                : [{Value: productID}, ],
+ //   Identification                : [{Value: productID}, ],
     HeaderInfo: {
       TypeName: 'Product',
       TypeNamePlural: 'Products',
@@ -193,12 +193,12 @@ annotate OrderService.OrderItems  with @UI : {
     { Value : unitPrice,  ![@UI.Importance]: #High},
     { Value : netPrice , ![@UI.Importance]: #High},
     { Value : to_Product.productDescription},
-    { Value : productModel },
-    { Value : productBrand },
-    { Value : productYear, ![@UI.Importance]: #High},
-    { Value : productColor,  ![@UI.Importance]: #High},
-    { Value : productSize, ![@UI.Importance]: #High},
-    { Value : productCondition,  ![@UI.Importance]: #Medium}
+    { Value : to_Product.productModel, Label : 'Product Model' },
+    { Value : to_Product.productBrand, Label : 'Product Brand' },
+    { Value : to_Product.productYear, Label : 'Product Year' }
+   // { Value : productColor,  ![@UI.Importance]: #High},
+   // { Value : productSize, ![@UI.Importance]: #High},
+   // { Value : productCondition,  ![@UI.Importance]: #Medium}
   
   ],
   Facets  : [ {  // General Information
@@ -236,12 +236,12 @@ annotate OrderService.OrderItems  with @UI : {
     Data : [ 
       { Value : to_Product.image, Label : ' ' },
       { Value : to_Product.productName, Label : 'Product Name' },
-      { Value : productModel, Label : 'Product Model' },
-      { Value : productBrand, Label : 'Product Brand' },
-      { Value : productYear, Label : 'Product Year' },
-      { Value : productColor, Label : 'Product Color' },
-      { Value : productSize, Label : 'Product Size' },
-      { Value : productCondition, Label : 'Product Condition' }
+    { Value : to_Product.productModel, Label : 'Product Model' },
+    { Value : to_Product.productBrand, Label : 'Product Brand' },
+    { Value : to_Product.productYear, Label : 'Product Year' }
+   // { Value : productColor,  ![@UI.Importance]: #High},
+   // { Value : productSize, ![@UI.Importance]: #High},
+   // { Value : productCondition,  ![@UI.Importance]: #Medium}
     ]
   }
 };

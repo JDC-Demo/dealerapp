@@ -25,7 +25,7 @@ entity Product : MasterData ,managed{
 }
 
 entity Customer :  MasterData {
-  key customerID : String; // @readonly @Core.Computed;
+  key customerID : Integer; // @readonly @Core.Computed;
   firstName      : String(40);
   lastName       : String(40);
   title          : String(10);

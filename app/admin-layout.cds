@@ -14,8 +14,8 @@ using { my.motorsport.Product as Product, my.motorsport.Customer as Customer} fr
         },
         Identification: [
             { Value: customerID, Label: '{i18n>CustomerID}' },
-            { Value: firstName, Label: '{i18n>FirstName}' },
-            { Value: lastName, Label: '{i18n>LastName}' },
+       //     { Value: firstName, Label: '{i18n>FirstName}' },
+       //     { Value: lastName, Label: '{i18n>LastName}' },
             { Value: companyName, Label: '{i18n>CompanyName}' }
         ],
         PresentationVariant: {
@@ -28,9 +28,9 @@ using { my.motorsport.Product as Product, my.motorsport.Customer as Customer} fr
         LineItem: [
             { Value: companyName, Label: '{i18n>CompanyName}' },
             { Value: companyAddress, Label: '{i18n>CompanyAddress}' },
-            { Value: firstName, Label: '{i18n>ContactFirstName}' },
-            { Value: lastName, Label: '{i18n>ContactLastName}' },
-            { Value: eMailAddress, Label: '{i18n>ContactEmail}' },
+       //     { Value: firstName, Label: '{i18n>ContactFirstName}' },
+       //     { Value: lastName, Label: '{i18n>ContactLastName}' },
+       //     { Value: eMailAddress, Label: '{i18n>ContactEmail}' },
             { Value: phoneNumber, Label: '{i18n>PhoneNumber}' }
         ],
         SelectionFields: [
@@ -44,9 +44,9 @@ using { my.motorsport.Product as Product, my.motorsport.Customer as Customer} fr
         FieldGroup#General: {
             Data: [
                 { Value: customerID, Label: '{i18n>CustomerID}' },
-                { Value: firstName, Label: '{i18n>FirstName}' },
-                { Value: lastName, Label: '{i18n>LastName}' },
-                { Value: title, Label: '{i18n>Title}' }
+       //         { Value: firstName, Label: '{i18n>FirstName}' },
+       //         { Value: lastName, Label: '{i18n>LastName}' },
+       //         { Value: title, Label: '{i18n>Title}' }
             ]
         },
         FieldGroup#Details: {
@@ -102,9 +102,9 @@ annotate AdminService.Products with @(
             { Value: productModel, Label: '{i18n>ProductModel}' },
             { Value: productBrand, Label: '{i18n>ProductBrand}' },
             { Value: productYear, Label: '{i18n>ProductYear}' },
-            { Value: productColor, Label: '{i18n>ProductColor}' },
-            { Value: productSize, Label: '{i18n>ProductSize}' },
-            { Value: productCondition, Label: '{i18n>ProductCondition}' },
+  //          { Value: productColor, Label: '{i18n>ProductColor}' },
+  //          { Value: productSize, Label: '{i18n>ProductSize}' },
+  //          { Value: productCondition, Label: '{i18n>ProductCondition}' },
             { Value: stockQuantity, Label: '{i18n>StockQuantity}' }
         ],
         SelectionFields: [
@@ -129,10 +129,10 @@ annotate AdminService.Products with @(
             Data: [
                 { Value: productModel, Label: '{i18n>ProductModel}' },
                 { Value: productBrand, Label: '{i18n>ProductBrand}' },
-                { Value: productYear, Label: '{i18n>ProductYear}' },
-                { Value: productColor, Label: '{i18n>ProductColor}' },
-                { Value: productSize, Label: '{i18n>ProductSize}' },
-                { Value: productCondition, Label: '{i18n>ProductCondition}' }
+                { Value: productYear, Label: '{i18n>ProductYear}' }
+   //             { Value: productColor, Label: '{i18n>ProductColor}' },
+   //             { Value: productSize, Label: '{i18n>ProductSize}' },
+   //             { Value: productCondition, Label: '{i18n>ProductCondition}' }
             ]
         },
         FieldGroup#Stock: {
@@ -166,7 +166,7 @@ annotate AdminService.OrderTemplate with @(
       Property   : orderID 
       }]},
 LineItem : [
-    { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.addFromTemplateToOrder',   Label  : '{i18n>AddToOrder}'   },
+    { $Type  : 'UI.DataFieldForAction', Action : 'AdminService.createOrderByTemplate',   Label  : '{i18n>AddToOrder}'   },
     { Value : orderID },
     { Value : description },
     { Value : totalAmount ,  ![@UI.Importance]: #High},
@@ -195,7 +195,7 @@ LineItem : [
 FieldGroup #GeneralInformation : {
     Data : [ 
    //   { Value : orderID  },
-      { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.addFromTemplateToOrder',   Label  : '{i18n>AddToOrder}'   },
+      { $Type  : 'UI.DataFieldForAction', Action : 'AdminService.createOrderByTemplate',   Label  : '{i18n>AddToOrder}'   },
       { Value : description},
       { Value : totalAmount },
       { Value : discount },
@@ -238,14 +238,13 @@ annotate AdminService.OrderTemplateItem  with @UI : {
  //   { Value : to_Product.price,  ![@UI.Importance]: #High},
     { Value : unitPrice,  ![@UI.Importance]: #High},
     { Value : netPrice , ![@UI.Importance]: #High},
-    { Value : to_Product.productDescription},
-    { Value : productModel },
-    { Value : productBrand },
-    { Value : productYear, ![@UI.Importance]: #High},
-    { Value : productColor,  ![@UI.Importance]: #High},
-    { Value : productSize, ![@UI.Importance]: #High},
-    { Value : productCondition,  ![@UI.Importance]: #Medium}
-  
+ //   { Value : to_Product.productDescription},
+    { Value : to_Product.productModel, Label : 'Product Model' },
+    { Value : to_Product.productBrand, Label : 'Product Brand' },
+    { Value : to_Product.productYear, Label : 'Product Year' }
+   // { Value : productColor,  ![@UI.Importance]: #High},
+   // { Value : productSize, ![@UI.Importance]: #High},
+   // { Value : productCondition,  ![@UI.Importance]: #Medium}
   ],
   Facets  : [ {  // General Information
      $Type  : 'UI.Collection.Facet',
@@ -282,12 +281,12 @@ annotate AdminService.OrderTemplateItem  with @UI : {
     Data : [ 
       { Value : to_Product.image, Label : ' ' },
       { Value : to_Product.productName, Label : 'Product Name' },
-      { Value : productModel, Label : 'Product Model' },
-      { Value : productBrand, Label : 'Product Brand' },
-      { Value : productYear, Label : 'Product Year' },
-      { Value : productColor, Label : 'Product Color' },
-      { Value : productSize, Label : 'Product Size' },
-      { Value : productCondition, Label : 'Product Condition' }
+      { Value : to_Product.productModel, Label : 'Product Model' },
+      { Value : to_Product.productBrand, Label : 'Product Brand' },
+      { Value : to_Product.productYear, Label : 'Product Year' }
+   // { Value : productColor,  ![@UI.Importance]: #High},
+   // { Value : productSize, ![@UI.Importance]: #High},
+   // { Value : productCondition,  ![@UI.Importance]: #Medium}
     ]
   }
 };

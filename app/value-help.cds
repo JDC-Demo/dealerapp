@@ -77,8 +77,8 @@ annotate schema.OrderItem with {
 annotate schema.OrderTemplateItem with {
 
     to_Product @Common.ValueList: {
-        CollectionPath: 'Product',
-        Label: '',
+        CollectionPath: 'Products',
+        Label: 'Product ID',
         Parameters : [
             {
                 $Type: 'Common.ValueListParameterInOut',

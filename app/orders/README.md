@@ -1,10 +1,10 @@
 ## Application Details
 |               |
 | ------------- |
-|**Generation Date and Time**<br>Mon Jan 15 2024 15:54:09 GMT-0600 (Central Standard Time)|
+|**Generation Date and Time**<br>Tue Jan 16 2024 20:28:29 GMT+0000 (Coordinated Universal Time)|
 |**App Generator**<br>@sap/generator-fiori-elements|
 |**App Generator Version**<br>1.12.1|
-|**Generation Platform**<br>Visual Studio Code|
+|**Generation Platform**<br>SAP Business Application Studio|
 |**Template Used**<br>List Report Page V4|
 |**Service Type**<br>Local Cap|
 |**Service URL**<br>http://localhost:4004/odata/v4/order/
@@ -21,7 +21,7 @@
 
 ## orders
 
-Manage Orders
+A Fiori application.
 
 ### Starting the generated app
 

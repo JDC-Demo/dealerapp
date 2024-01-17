@@ -3,17 +3,17 @@
   "tenant-mode": "dedicated",
   "scopes": [
     {
-      "name": "$XSAPPNAME.admin",
-      "description": "admin"
+      "name": "$XSAPPNAME.dealeradmin",
+      "description": "dealeradmin"
     }
   ],
   "attributes": [],
   "role-templates": [
     {
-      "name": "admin",
+      "name": "dealeradmin",
       "description": "generated",
       "scope-references": [
-        "$XSAPPNAME.admin"
+        "$XSAPPNAME.dealeradmin"
       ],
       "attribute-references": []
     }

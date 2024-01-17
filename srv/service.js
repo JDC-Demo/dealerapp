@@ -9,6 +9,7 @@ class OrderService extends cds.ApplicationService {
      */
         const { Orders, OrderItems, Product, OrderTemplate, OrderTemplateItem, ProductCatalogue } = this.entities
 
+ 
 
         // create a function to update unit price and net price for order line items using uuid
 
@@ -89,15 +90,18 @@ class OrderService extends cds.ApplicationService {
             const { itemUUID } = req.data;
             const { to_Order_orderUUID } = await SELECT.one().from(OrderItems).where({ itemUUID });
             const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: to_Order_orderUUID })
-            const discount = sum * .03;
-            const tax = (sum - discount) * 0.07;
-            const total = sum + tax - discount;
-            // console.log( discount,tax, total);
+            
+            // console.log(sum);
+            const discount = (sum * .03).toFixed(2) ;
+            const tax = ((sum - discount) * 0.07).toFixed(2) ;           
+            const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
+            // console.log( discount,tax, totalAmount);
+            
             // add a value 6 months into future 
             const estimatedDeliveryDate = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().slice(0, 10) // today
 
             // update total price on orders
-            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax.toFixed(2), totalAmount: total.toFixed(2), discount: discount.toFixed(2) }).where({ orderUUID: to_Order_orderUUID }))
+            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: to_Order_orderUUID }))
             // 
 
         });
@@ -110,63 +114,100 @@ class OrderService extends cds.ApplicationService {
                 const { itemUUID } = req.data;
                 const { to_Product_productID } = await SELECT.one().from(OrderItems.drafts).where({ itemUUID });
                 const { price } = await SELECT.one().from(ProductCatalogue).where({ productID: to_Product_productID });
-                return await cds.run(UPDATE(OrderItems.drafts).set({ netPrice: price * req.data.quantity, unitPrice: price }).where({ itemUUID: itemUUID }));
+                await cds.run(UPDATE(OrderItems.drafts).set({ netPrice: price * req.data.quantity, unitPrice: price }).where({ itemUUID: itemUUID }));
             }
 
+            //update the total price and taxes after editing  items
+            const {to_Order_orderUUID} = await SELECT.one().from(OrderItems.drafts).where({ itemUUID: req.data.itemUUID });
+            const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems.drafts).where({ to_Order_orderUUID: to_Order_orderUUID })
+            // console.log(sum);
+            // add a value 6 months into future 
+            const estimatedDeliveryDate = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().slice(0, 10) // today
+            if( parseFloat(sum) > 0)
+               {
+            const discount = (sum * .03).toFixed(2) ;
+            const tax = ((sum - discount) * 0.07).toFixed(2) ;           
+            const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
+            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID : to_Order_orderUUID}))
+               }
+               else {
+                return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: 0.00, totalAmount: 0.00, discount: 0.00 }).where({ orderUUID : to_Order_orderUUID}))
+               } 
         })
 
         this.before('UPDATE', 'Orders', async (req) => {
-            console.log('  update orders before handler called')
+            console.log('  update orders >> before handler called')
+            const { orderStatus } = await SELECT.one`orderStatus`.from(Orders).where({ orderUUID: req.data.orderUUID })
+            if (orderStatus === 'C' || orderStatus === 'A') req.reject(403, 'Order cannot be updated')
+
             const { orderUUID } = req.data;
-            console.log('Order Update after handler called');
             const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: orderUUID })
             // console.log(sum);
-            const discount = sum * .03;
-            const tax = (sum - discount) * 0.07;
-            const total = sum + tax - discount;
-            // console.log( discount,tax, total);
+            
+            if( parseFloat(sum) > 0)
+               {
+            const discount = (sum * .03).toFixed(2) ;
+            const tax = ((sum - discount) * 0.07).toFixed(2) ;           
+            const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
+//            console.log( discount,tax, totalAmount);
+            
+            req.data.tax = tax;
+            req.data.totalAmount = totalAmount;
+            req.data.discount = discount;
+               }
+
+               else {
+                req.data.tax = 0.00;
+                req.data.totalAmount = 0.00;
+                req.data.discount = 0.00;
+
+               }
+
             // add a value 6 months into future 
             const estimatedDeliveryDate = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().slice(0, 10) // today
             req.data.estimatedDeliveryDate = estimatedDeliveryDate;
-            req.data.tax = tax.toFixed(2);
-            req.data.totalAmount = total.toFixed(2);
-            req.data.discount = discount.toFixed(2);
-
-            // update total price on orders
-            //     return   await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate : estimatedDeliveryDate , tax : tax.toFixed(2), totalAmount: total.toFixed(2), discount: discount.toFixed(2) }).where({ orderUUID }))
-            // 
-
-
+            
         })
 
-        this.after('UPDATE', 'Orders', async (_, req) => {
-            console.log('  update orders after handler called')
-            const { orderUUID } = req.data;
-            console.log('Order Update after handler called');
-            const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: orderUUID })
-            // console.log(sum);
-            const discount = sum * .03;
-            const tax = (sum - discount) * 0.07;
-            const total = sum + tax - discount;
-            // console.log( discount,tax, total);
+        // After items are deleted recalculate the order prices
+
+        this.after('DELETE', "OrderItems.drafts", async (_, req) => {
+
+            const {to_Order_orderUUID} = await SELECT.one().from(OrderItems.drafts).where({ itemUUID: req.data.itemUUID });
+            const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems.drafts).where({ to_Order_orderUUID: to_Order_orderUUID })
             // add a value 6 months into future 
             const estimatedDeliveryDate = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().slice(0, 10) // today
+            if( parseFloat(sum) > 0)
+               {
+            const discount = (sum * .03).toFixed(2) ;
+            const tax = ((sum - discount) * 0.07).toFixed(2) ;           
+            const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
+            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID : to_Order_orderUUID}))
+               }
+               else {
+                return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: 0.00, totalAmount: 0.00, discount: 0.00 }).where({ orderUUID : to_Order_orderUUID}))
+               } 
+        });
 
-            // update total price on orders
-            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax.toFixed(2), totalAmount: total.toFixed(2), discount: discount.toFixed(2) }).where({ orderUUID }))
-            // 
 
+        // update to order
+        this.after('UPDATE', 'Orders', async (_, req) => {
+            const { orderStatus } = await SELECT.one`orderStatus`.from(Orders).where({ orderUUID: req.data.orderUUID })
+            if (orderStatus === 'C' || orderStatus === 'A') req.reject(403, 'Order cannot be updated')
 
         })
 
         /**
          * Changes to  orders not allowed after approval or cancelled.
          */
-        this.before(['UPDATE', 'DELETE'], 'Orders', async (req) => {
-            console.log('  update orders before handler called')
-            console.log(req.data)
+        this.before('DELETE', 'Orders', async (req) => {
+            console.log('  delete orders before handler called')
+          //  console.log(req.data)
             const { orderStatus } = await SELECT.one`orderStatus`.from(Orders).where({ orderUUID: req.data.orderUUID })
             if (orderStatus === 'C' || orderStatus === 'A') req.reject(403, 'Order cannot be updated')
+
+
+
         })
 
 

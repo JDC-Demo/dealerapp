@@ -32,7 +32,7 @@ service OrderService {
 service AdminService {
     @(restrict: [
    // { grant: ['*'], to: 'authenticated-user'},
-    { grant: ['*'], to: 'admin'}
+    { grant: ['*'], to: 'dealeradmin'}
 
   ])
   entity Customers as projection on masterdataschema.Customer;
@@ -44,7 +44,7 @@ service AdminService {
 service CustomerService {
   @(restrict: [
     { grant: ['*'], to: 'authenticated-user'},
-    { grant: ['*'], to: 'admin'}
+    { grant: ['*'], to: 'dealeradmin'}
 
   ])
   entity Customers as projection on masterdataschema.Customer;
@@ -53,7 +53,7 @@ service CustomerService {
 service ProductService {
   @(restrict: [
     { grant: ['*'], to: 'authenticated-user'},
-    { grant: ['*'], to: 'admin'}
+    { grant: ['*'], to: 'dealeradmin'}
   ])
 
   

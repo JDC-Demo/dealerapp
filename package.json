@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@cap-js/sqlite": "^1",
+    "@sap/cds-dk": "^7",
     "@sap/hdi-deploy": "4.9.2",
     "@sap/ux-specification": "^1.120.1"
   },
@@ -47,10 +48,6 @@
           }
         }
       },
-      "OP_API_SALES_ORDER_SRV_0001": {
-        "kind": "odata-v2",
-        "model": "srv/external/OP_API_SALES_ORDER_SRV_0001"
-      },
       "db": "hana",
       "[production]": {
         "db": "hana",
@@ -70,7 +67,8 @@
     "watch-admin-products": "cds watch --open admin-products/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-admin-ordertemplates": "cds watch --open admin-ordertemplates/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-ordertemplates": "cds watch --open ordertemplates/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-products": "cds watch --open products/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-products": "cds watch --open products/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-orders": "cds watch --open orders/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "sapux": [
     "app/dearlerapp",
@@ -82,6 +80,7 @@
     "app/admin-products",
     "app/admin-ordertemplates",
     "app/ordertemplates",
-    "app/products"
+    "app/products",
+    "app/orders"
   ]
 }

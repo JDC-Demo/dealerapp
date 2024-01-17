@@ -13,7 +13,7 @@ UI.HeaderInfo : {
 });
 
 annotate OrderService.Orders with @(
-  UI.SelectionFields : [ orderID ] 
+  UI.SelectionFields : [ orderID ,  to_Customer_customerID] 
 );
 
  
@@ -471,8 +471,8 @@ annotate ProductService.Products with @(
 annotate OrderService.OrderTemplate with @(
     UI: {
       HeaderInfo: {
-        TypeName : 'Order',
-        TypeNamePlural : 'Orders ',
+        TypeName : 'Template',
+        TypeNamePlural : 'Templates ',
         Title : { Value : orderID },
         Description : { Value : description },
         SelectionFields : [ orderID ] },

@@ -91,26 +91,28 @@ class OrderService extends cds.ApplicationService {
             console.log('  update after OrderItems called');
             const { itemUUID } = req.data;
             const { to_Order_orderUUID } = await SELECT.one().from(OrderItems).where({ itemUUID });
+            console.log(to_Order_orderUUID);
             const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: to_Order_orderUUID })
-            
-            // console.log(sum);
+            console.log(sum);
             const discount = (sum * .03).toFixed(2) ;
             const tax = ((sum - discount) * 0.07).toFixed(2) ;           
             const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
-            // console.log( discount,tax, totalAmount);
+            console.log( discount,tax, parseFloat(totalAmount));
             
             // add a value 6 months into future 
             const estimatedDeliveryDate = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().slice(0, 10) // today
 
             // update total price on orders
-            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: to_Order_orderUUID }))
+          //  return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, discount: discount }).where({ orderUUID: to_Order_orderUUID }))
+            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: parseFloat(totalAmount), discount: discount }).where({ orderUUID: to_Order_orderUUID }))
+          
             // 
 
         });
 
 
 
-        this.after('UPDATE', 'OrderItems.drafts', async (_, req) => {
+        this.after('UPDATE', 'OrderItems.drafts', async (_, req) => { 
             console.log('  update items after handler called for draft')
             if ('quantity' in req.data) {
                 const { itemUUID } = req.data;
@@ -130,7 +132,7 @@ class OrderService extends cds.ApplicationService {
             const discount = (sum * .03).toFixed(2) ;
             const tax = ((sum - discount) * 0.07).toFixed(2) ;           
             const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
-            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID : to_Order_orderUUID}))
+            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: parseFloat(totalAmount), discount: discount }).where({ orderUUID : to_Order_orderUUID}))
                }
                else {
                 return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: 0.00, totalAmount: 0.00, discount: 0.00 }).where({ orderUUID : to_Order_orderUUID}))
@@ -186,7 +188,7 @@ class OrderService extends cds.ApplicationService {
                const discount = (sum * .03).toFixed(2) ;
                const tax = ((sum - discount) * 0.07).toFixed(2) ;           
                const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
-               return await cds.run(UPDATE(Orders).set({ tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID : to_Order_orderUUID}))
+               return await cds.run(UPDATE(Orders).set({ tax: tax, totalAmount:  parseFloat(totalAmount), discount: discount }).where({ orderUUID : to_Order_orderUUID}))
               
             }
            else    
@@ -248,10 +250,10 @@ class OrderService extends cds.ApplicationService {
 
             const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: newpurchaseOrder.orderUUID })
             // console.log(sum);
-            const discount = sum * .03;
-            const tax = (sum - discount) * 0.07;
-            const total = sum + tax - discount;
-            await cds.run(UPDATE(Orders).set({ tax: tax.toFixed(2), totalAmount: total.toFixed(2), discount: discount.toFixed(2) }).where({ orderUUID: newpurchaseOrder.orderUUID }));
+            const discount = (sum * .03).toFixed(2) ;
+            const tax = ((sum - discount) * 0.07).toFixed(2) ;           
+            const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
+            await cds.run(UPDATE(Orders).set({ tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: newpurchaseOrder.orderUUID }));
 
 
             req.info(`Added to order '${newpurchaseOrder.orderID}'`);
@@ -282,6 +284,7 @@ class OrderService extends cds.ApplicationService {
                 orderID = purchaseOrder.orderID;
                 newpurchaseOrder = purchaseOrder;
                 const { maxID } = await srv.tx(req).run(SELECT.one`max(itemID) as maxID`.from(OrderItems).where({ to_Order_orderUUID: purchaseOrder.orderUUID }));
+              console.log(maxID)
                 if (!maxID) itemID = 1
                 else {
                     itemID = maxID + 1
@@ -314,7 +317,11 @@ class OrderService extends cds.ApplicationService {
             else {
                 console.log('order not found; new order created');
                 // create a new order
-                const { maxID } = await srv.tx(req).run(SELECT.one`max(orderID) as maxID`.from(Orders))
+//                const { maxID } = await srv.tx(req).run(SELECT.one`max(orderID) as maxID`.from(Orders))
+  //              const [{ maxID }] = await srv.tx(req).run(`SELECT MAX(orderID) as maxID FROM "Orders"`);
+  const { maxID } = await SELECT.one`max(orderID) as maxID`.from(Orders);
+ // const { maxID } = await srv.tx(req).run(SELECT.one`max(orderID) as maxID`.from(Orders));
+  console.log(maxID)
                 if (!maxID) orderID = 1
                 else {
                     orderID = maxID + 1
@@ -332,6 +339,7 @@ class OrderService extends cds.ApplicationService {
                 await srv.tx(req).run(INSERT.into('Orders').entries(newpurchaseOrder));
 
                 newpurchaseOrderItem = [{
+                    itemUUID: cds.utils.uuid(),
                     itemID: 1,
                     quantity: quantity,
                     to_Product_productID: productID,
@@ -346,8 +354,8 @@ class OrderService extends cds.ApplicationService {
 
             if (newpurchaseOrderItem && Object.keys(newpurchaseOrderItem).length > 0) {
                 console.log('insert order item to persistense');
-                await srv.tx(req).run(INSERT.into('OrderItems').entries(newpurchaseOrderItem));
-                await srv.tx(req).run(UPDATE(OrderItems).set({ itemID : itemID, netPrice: price * newpurchaseOrderItem.quantity, unitPrice: price }).where({ itemUUID: newpurchaseOrderItem.itemUUID }));
+                await srv.tx(req).run(INSERT.into('OrderItems').entries(newpurchaseOrderItem[0]));
+                await srv.tx(req).run(UPDATE(OrderItems).set({ netPrice: price * newpurchaseOrderItem.quantity, unitPrice: price }).where({ itemUUID: newpurchaseOrderItem[0].itemUUID }));
 
             }
             else {
@@ -355,12 +363,11 @@ class OrderService extends cds.ApplicationService {
                 await srv.tx(req).run(UPDATE(OrderItems).set({ quantity: updpurchaseOrderItem.quantity, netPrice: updpurchaseOrderItem.netPrice }).where({ itemUUID: updpurchaseOrderItem.itemUUID }));
             }
 
-            const { sum } = await srv.tx(req).run(SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: newpurchaseOrderItem.to_Order_orderUUID }));
-            const discount = sum * .03;
-            const tax = (sum - discount) * 0.07;
-            const total = sum + tax - discount;
-
-            await cds.run(UPDATE(Orders).set({ tax: tax.toFixed(2), totalAmount: total.toFixed(2), discount: discount.toFixed(2) }).where({ orderUUID: newpurchaseOrderItem.to_Order_orderUUID }));
+            const { sum } = await srv.tx(req).run(SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: newpurchaseOrderItem[0].to_Order_orderUUID }));
+            const discount = (sum * .03).toFixed(2) ;
+            const tax = ((sum - discount) * 0.07).toFixed(2) ;           
+            const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
+            await cds.run(UPDATE(Orders).set({ tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: newpurchaseOrderItem[0].to_Order_orderUUID }));
             // return a message order is added
             req.info(`Product added to order '${orderID}'`);
 
@@ -571,10 +578,10 @@ class OrderService extends cds.ApplicationService {
 
           const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: newpurchaseOrder.orderUUID })
           // console.log(sum);
-          const discount = sum * .03;
-          const tax = (sum - discount) * 0.07;
-          const total = sum + tax - discount;
-          await cds.run(UPDATE(Orders).set({ tax: tax.toFixed(2), totalAmount: total.toFixed(2), discount: discount.toFixed(2) }).where({ orderUUID: newpurchaseOrder.orderUUID }));
+          const discount = (sum * .03).toFixed(2) ;
+          const tax = ((sum - discount) * 0.07).toFixed(2) ;           
+          const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
+          await cds.run(UPDATE(Orders).set({ tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: newpurchaseOrder.orderUUID }));
 
 
           req.info(`Added to order '${newpurchaseOrder.orderID}'`);
@@ -868,10 +875,10 @@ class AdminService extends cds.ApplicationService {
             }
           const { sum } = await SELECT.one`sum(netPrice) as sum`.from('OrderItems').where({ to_Order_orderUUID: newpurchaseOrder.orderUUID })
           console.log(sum);
-          const discount = sum * .03;
-          const tax = (sum - discount) * 0.07;
-          const total = sum + tax - discount;
-          await cds.run(UPDATE(Orders).set({ tax: tax.toFixed(2), totalAmount: total.toFixed(2), discount: discount.toFixed(2) }).where({ orderUUID: newpurchaseOrder.orderUUID }));
+          const discount = (sum * .03).toFixed(2) ;
+          const tax = ((sum - discount) * 0.07).toFixed(2) ;           
+          const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
+          await cds.run(UPDATE(Orders).set({ tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: newpurchaseOrder.orderUUID }));
 
 
           req.info(`Added to order '${newpurchaseOrder.orderID}'`);

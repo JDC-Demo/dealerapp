@@ -7,7 +7,7 @@
     <meta content="text/html;charset=UTF-8" http-equiv="Content-Type" />
     <meta content="width=device-width, initial-scale=1.0" name="viewport" />
 
-    <title>Sample Apps</title>
+    <title>Yamaha Dealer Solution</title>
 
     <script>
       window["sap-ushell-config"] = {
@@ -24,20 +24,53 @@
         applications: {
           "admin-dealers": {
             title: "Manage Dealer Profile",
-            description:"Manage Dealer Profile",
-            additionalInformation: "SAPUI5.Component=sap.fe.featureShowcase.mainApp",
+            description:"Admin view - Dealer Profile",
+            additionalInformation: "SAPUI5.Component=admindealers",
             applicationType: "URL",
             url: "/admin-dealers/webapp",
             navigationMode: "embedded",
           },
           "admin-ordertemplates": {
             title: "Manage Order Templates",
-            description:"Manage Order Templates",
-            additionalInformation: "SAPUI5.Component=sap.fe.featureShowcase.mainApp",
+            description:"Admin view - Order Templates",
+            additionalInformation: "SAPUI5.Component=adminordertemplates",
             applicationType: "URL",
             url: "/admin-ordertemplates/webapp",
             navigationMode: "embedded",
           },
+          "admin-products": {
+            title: "Manage Products",
+            description:"Admin view - Products",
+            additionalInformation: "SAPUI5.Component=adminproducts",
+            applicationType: "URL",
+            url: "/admin-products/webapp",
+            navigationMode: "embedded",
+          },
+          
+          "orders": {
+            title: "Manage Dealer Orders",
+            description:"Dealer view - Orders",
+            additionalInformation: "SAPUI5.Component=orders",
+            applicationType: "URL",
+            url: "/orders/webapp",
+            navigationMode: "embedded",
+          },
+          "templates": {
+            title: "Display Templates",
+            description:"Dealer view - Templatea",
+            additionalInformation: "SAPUI5.Component=ordertemplates",
+            applicationType: "URL",
+            url: "/ordertemplates/webapp",
+            navigationMode: "embedded",
+          },         
+          "products": {
+            title: "Display Products",
+            description:"Dealer view - Products",
+            additionalInformation: "SAPUI5.Component=products",
+            applicationType: "URL",
+            url: "/products/webapp",
+            navigationMode: "embedded",
+          }
         },
         bootstrapPlugins: {
           RuntimeAuthoringPlugin: {

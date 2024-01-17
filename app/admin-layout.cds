@@ -7,8 +7,8 @@ using { my.motorsport.Product as Product, my.motorsport.Customer as Customer} fr
  annotate AdminService.Customers with @(
     UI: {
         HeaderInfo: {
-            TypeName: '{i18n>Customer}',
-            TypeNamePlural: '{i18n>Customers}',
+            TypeName: 'Dealer',
+            TypeNamePlural: 'Dealers',
             Title: { Value: companyName, Label: '{i18n>CompanyName}' },
             Description: { Value: eMailAddress, Label: '{i18n>EmailAddress}' }
         },
@@ -153,8 +153,8 @@ annotate AdminService.Products with @(
 annotate AdminService.OrderTemplate with @(
     UI: {
       HeaderInfo: {
-        TypeName : 'Order',
-        TypeNamePlural : 'Orders ',
+        TypeName : 'Template',
+        TypeNamePlural : 'Templates ',
         Title : { Value : orderID },
         Description : { Value : description },
         SelectionFields : [ orderID ] },

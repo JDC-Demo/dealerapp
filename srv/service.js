@@ -41,10 +41,34 @@ class OrderService extends cds.ApplicationService {
             }
             req.data.orderStatus_code = 'O'
             req.data.orderDate = (new Date).toISOString().slice(0, 10) // today
-        })
+            req.data.orderedBy  = req.user.id;
 
+        });
+         /**
+            * Fill in net line total after items in draft are added for a new order
   
- 
+        */
+         this.after('CREATE', 'Orders',  async (_, req) => {
+            console.log('OrderService: after create handler >> Orders');
+            console.log(req.data);
+  
+            const { orderUUID } = req.data;
+            const max =   await SELECT.one`count(*) as max`.from(OrderItems.drafts).where({ to_order_orderUUID: orderUUID }); 
+            // update total if atleast on draft item is present
+            if (max > 1) {
+                const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems.drafts).where({ to_Order_orderUUID: orderUUID })
+                console.log(sum);
+                const discount = (sum * .03).toFixed(2) ;
+                const tax = ((sum - discount) * 0.07).toFixed(2) ;           
+                const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
+                console.log( discount,tax, parseFloat(totalAmount));
+                
+                // add a value 6 months into future 
+                const estimatedDeliveryDate = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().slice(0, 10) // today
+                return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: orderUUID }))
+            }
+        });
+
         /**
          * Fill in defaults for new item when adding products to order.
          */
@@ -629,6 +653,7 @@ class OrderService extends cds.ApplicationService {
     }
 };
 
+
 class ProductService extends cds.ApplicationService {
 
     init() {
@@ -648,7 +673,7 @@ class ProductService extends cds.ApplicationService {
         })
 */
 
-        return super.init()
+        return super.init();
     }
 
 };

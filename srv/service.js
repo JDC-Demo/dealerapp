@@ -5,7 +5,7 @@ class OrderService extends cds.ApplicationService {
     init() {
 
         const CUSTOMER = 100010002;
-        /**
+    /**
      * Reflect definitions from the service's CDS model
      */
         const { Orders, OrderItems, Product, OrderTemplate, OrderTemplateItem, ProductCatalogue } = this.entities
@@ -15,12 +15,13 @@ class OrderService extends cds.ApplicationService {
         // create a function to update unit price and net price for order line items using uuid
 
         this._updateOrderLineItem = async function (orderUUID, req, srv) {
+            console.log('Order service : line item net price update')
             const orderLineItems = await srv.tx(req).run(SELECT.from('OrderItems').where({ to_Order_orderUUID: orderUUID }));
             for (let i = 0; i < orderLineItems.length; i++) {
                 const { price } = await srv.tx(req).run(SELECT.one().from(ProductCatalogue).where({ productID: orderLineItems[i].to_Product_productID }));
                 orderLineItems[i].netPrice = price * orderLineItems[i].quantity;
                 orderLineItems[i].unitPrice = price;
-                console.log(  orderLineItems[i]);
+             //   console.log(  orderLineItems[i]);
                 const result = await srv.tx(req).run(UPDATE(OrderItems).set({ netPrice: price * orderLineItems[i].quantity, unitPrice: price }).where({ itemUUID: orderLineItems[i].itemUUID }));
             }
         }
@@ -31,6 +32,8 @@ class OrderService extends cds.ApplicationService {
   
         */
         this.before('CREATE', 'Orders', async req => {
+            console.log('OrderService: before create handler >> Orders');
+            console.log(req.data);
             const { maxID } = await SELECT.one`max(orderID) as maxID`.from(Orders)
             if (!maxID) req.data.orderID = 1
             else {
@@ -40,12 +43,14 @@ class OrderService extends cds.ApplicationService {
             req.data.orderDate = (new Date).toISOString().slice(0, 10) // today
         })
 
-
-                /**
+  
+ 
+        /**
          * Fill in defaults for new item when adding products to order.
          */
                 this.before('CREATE', 'OrderItems', async (req) => {
-                    console.log('  create before OrderItems called', req.data);
+                    console.log('OrderService: before create handler >> OrderItems');
+                    console.log(req.data);
                     const { to_Order_orderUUID } = req.data
                     const { maxID } = await SELECT.one`max(itemID) as maxID`.from(OrderItems).where({ to_Order_orderUUID })
                     if (!maxID) req.data.itemID = 1
@@ -53,13 +58,42 @@ class OrderService extends cds.ApplicationService {
                         req.data.itemID = maxID + 1
                 })
 
-                
+        /**
+         * Fill in net price for new item when adding products to order.
+         */
+          this.after('CREATE', 'OrderItems',  async (_, req) => {
+            
+            console.log('OrderService: after create handler >> OrderItems');
+            const { itemUUID } = req.data; 
+            const { to_Product_productID, quantity } = await SELECT.one().from(OrderItems).where({ itemUUID });
+            const { price } = await SELECT.one().from(ProductCatalogue).where({ productID: to_Product_productID });
+            await cds.run(UPDATE(OrderItems).set({ netPrice: price * quantity, unitPrice: price }).where({ itemUUID: itemUUID }));
+        
+        
+            // update the order header after new item is added
+
+            const { to_Order_orderUUID } = await SELECT.one().from(OrderItems).where({ itemUUID });
+            console.log(to_Order_orderUUID);
+            const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: to_Order_orderUUID })
+            console.log(sum);
+            const discount = (sum * .03).toFixed(2) ;
+            const tax = ((sum - discount) * 0.07).toFixed(2) ;           
+            const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
+            console.log( discount,tax, parseFloat(totalAmount));
+            
+            // add a value 6 months into future 
+            const estimatedDeliveryDate = new Date(new Date().setMonth(new Date().getMonth() + 6)).toISOString().slice(0, 10) // today
+            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: to_Order_orderUUID }))
+        
+        })
+    
+                    
 
         /**
          * Fill in defaults for new item when editing order.
          */
         this.before('NEW', 'OrderItems.drafts', async (req) => {
-
+            console.log('OrderService: before new handler >> OrderItems drafts');
             const { to_Order_orderUUID } = req.data
             const { maxID } = await SELECT.one`max(itemID) as maxID`.from(OrderItems).where({ to_Order_orderUUID })
             if (!maxID) req.data.itemID = 1
@@ -69,11 +103,10 @@ class OrderService extends cds.ApplicationService {
 
 
         this.before('UPDATE', 'OrderItems', async (req) => {
-            console.log('  update before OrderItems called');
-            console.log(req.data);
+            console.log('OrderService: before update handler >> OrderItems');
             let newQuantity = 0;
             const { itemUUID } = req.data;
-            console.log(await SELECT.one().from(OrderItems).where({ itemUUID }));
+          //  console.log(await SELECT.one().from(OrderItems).where({ itemUUID }));
             const { to_Product_productID, quantity } = await SELECT.one().from(OrderItems).where({ itemUUID });
             const { price } = await SELECT.one().from(ProductCatalogue).where({ productID: to_Product_productID });
             if ('quantity' in req.data)
@@ -88,7 +121,7 @@ class OrderService extends cds.ApplicationService {
         });
 
         this.after('UPDATE', 'OrderItems', async (_, req) => {
-            console.log('  update after OrderItems called');
+            console.log('OrderService: after update handler >> OrderItems');
             const { itemUUID } = req.data;
             const { to_Order_orderUUID } = await SELECT.one().from(OrderItems).where({ itemUUID });
             console.log(to_Order_orderUUID);
@@ -104,7 +137,7 @@ class OrderService extends cds.ApplicationService {
 
             // update total price on orders
           //  return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, discount: discount }).where({ orderUUID: to_Order_orderUUID }))
-            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: parseFloat(totalAmount), discount: discount }).where({ orderUUID: to_Order_orderUUID }))
+            return await cds.run(UPDATE(Orders).set({ estimatedDeliveryDate: estimatedDeliveryDate, tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: to_Order_orderUUID }))
           
             // 
 
@@ -113,7 +146,7 @@ class OrderService extends cds.ApplicationService {
 
 
         this.after('UPDATE', 'OrderItems.drafts', async (_, req) => { 
-            console.log('  update items after handler called for draft')
+            console.log('OrderService: after update handler >> OrderItems drafts');
             if ('quantity' in req.data) {
                 const { itemUUID } = req.data;
                 const { to_Product_productID } = await SELECT.one().from(OrderItems.drafts).where({ itemUUID });
@@ -140,7 +173,7 @@ class OrderService extends cds.ApplicationService {
         })
 
         this.before('UPDATE', 'Orders', async (req) => {
-            console.log('  update orders >> before handler called')
+            console.log('OrderService: before update handler >> Orders');
             const { orderStatus } = await SELECT.one`orderStatus`.from(Orders).where({ orderUUID: req.data.orderUUID })
             if (orderStatus === 'C' || orderStatus === 'A') req.reject(403, 'Order cannot be updated')
 
@@ -177,8 +210,7 @@ class OrderService extends cds.ApplicationService {
 
         this.after('DELETE', "OrderItems.drafts", async (_, req) => {
 
-
-            console.log('  delete OrderTemplate >> AFTER handler called')
+            console.log('OrderService: after delete  handler >> OrderItems drafts');
             // check if any items are present in draft
             const max =   await SELECT.one`count(*) as max`.from(OrderItems.drafts).where({ itemUUID: req.data.itemUUID }); 
            if (max > 1) {
@@ -202,6 +234,7 @@ class OrderService extends cds.ApplicationService {
 
         // update to order
         this.after('UPDATE', 'Orders', async (_, req) => {
+            console.log('OrderService: after update  handler >> Orders');
             const { orderStatus } = await SELECT.one`orderStatus`.from(Orders).where({ orderUUID: req.data.orderUUID })
             if (orderStatus === 'C' || orderStatus === 'A') req.reject(403, 'Order cannot be updated')
 
@@ -211,7 +244,7 @@ class OrderService extends cds.ApplicationService {
          * Changes to  orders not allowed after approval or cancelled.
          */
         this.before('DELETE', 'Orders', async (req) => {
-            console.log('  delete orders before handler called')
+            console.log('OrderService: before delete handler >> Orders');
           //  console.log(req.data)
             const { orderStatus } = await SELECT.one`orderStatus`.from(Orders).where({ orderUUID: req.data.orderUUID })
             if (orderStatus === 'C' || orderStatus === 'A') req.reject(403, 'Order cannot be updated')
@@ -220,9 +253,18 @@ class OrderService extends cds.ApplicationService {
 
         })
 
+        this.on('confirmOrder', async (req) => {
+            console.log('OrderService: confirmOrder handler'); 
+            const srv = await cds.connect.to('OrderService')
+            console.log(req.params);
+            const { orderUUID } = req.params[0];
+            const {orderID}= await  srv.tx(req).run(SELECT.one().from('Orders').where({ orderUUID: orderUUID }));
+            await cds.run(UPDATE(Orders).set({ orderStatus_code:'A'}).where({ orderUUID: orderUUID }));
+            req.info(`Order '${orderID}' successfully submitted for processing`);
+        });
 
         this.on('addFromTemplateToOrder', async (req) => {
-
+            console.log('OrderService: addFromTemplateToOrder handler');
             const srv = await cds.connect.to('OrderService')
             const { orderUUID } = req.params[0];
 
@@ -234,27 +276,31 @@ class OrderService extends cds.ApplicationService {
 
             // Create a new  purchase order with the copied data
             const newpurchaseOrder = { ...purchaseOrder, orderUUID: cds.utils.uuid() };
+      
+          //string to float
+          newpurchaseOrder.discount = parseFloat(newpurchaseOrder.discount);
+          newpurchaseOrder.tax = parseFloat(newpurchaseOrder.tax);
+          newpurchaseOrder.totalAmount = parseFloat(newpurchaseOrder.totalAmount);
+
             const newpurchaseOrderItems = purchaseOrderItems.map(item => ({
                 ...item,
                 itemUUID: cds.utils.uuid(),
-                to_Order_orderUUID: newpurchaseOrder.orderUUID
+                to_Order_orderUUID: newpurchaseOrder.orderUUID,
+                netPrice : (parseFloat(item.unitPrice) * parseFloat(item.quantity)).toFixed(2),
+                unitPrice : parseFloat(item.unitPrice)
+
             }));
             newpurchaseOrder.to_Customer_customerID = CUSTOMER;
+            newpurchaseOrder.orderNotes = `Copied from template ${purchaseOrder.orderID}`;
 
 
 
             await srv.tx(req).run(INSERT.into('Orders').entries(newpurchaseOrder));
-            await srv.tx(req).run(INSERT.into('OrderItems').entries(newpurchaseOrderItems));
-            await this._updateOrderLineItem(newpurchaseOrder.orderUUID, req, srv)
 
-
-            const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: newpurchaseOrder.orderUUID })
-            // console.log(sum);
-            const discount = (sum * .03).toFixed(2) ;
-            const tax = ((sum - discount) * 0.07).toFixed(2) ;           
-            const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
-            await cds.run(UPDATE(Orders).set({ tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: newpurchaseOrder.orderUUID }));
-
+              //insert each item of newpurchaseOrderItems to OrderItems
+              for (let i = 0; i < newpurchaseOrderItems.length; i++) {
+                await srv.tx(req).run(INSERT.into('OrderItems').entries(newpurchaseOrderItems[i]));
+            }
 
             req.info(`Added to order '${newpurchaseOrder.orderID}'`);
 
@@ -263,6 +309,8 @@ class OrderService extends cds.ApplicationService {
 
         //add handler for Add to Order action
         this.on('addProductToOrder', async req => {
+
+            console.log('OrderService: addProductToOrder handler');
             // print the user
             console.log(req.user.id);
             const { productID } = req.params[0];
@@ -270,12 +318,8 @@ class OrderService extends cds.ApplicationService {
             const { price } = await SELECT.one().from(ProductCatalogue).where({ productID });
             const srv = await cds.connect.to('OrderService')
 
-            // fetch order with status open for customer 28
-            //select the latest order with status open for customer 28
-            const [purchaseOrder] = await srv.tx(req).run(SELECT.from('Orders').where({ orderStatus_code: 'O', to_Customer_customerID: 28 }));
-            //  console.log('purchaseOrder  ');
-            //   console.log(purchaseOrder)
 
+            const [purchaseOrder] = await srv.tx(req).run(SELECT.from('Orders').where({ orderStatus_code: 'O', to_Customer_customerID: CUSTOMER }));
             let orderID = 0, itemID = 0, newpurchaseOrderItem = {}, newpurchaseOrder = {}, updpurchaseOrderItem = {};
 
             if (purchaseOrder) {
@@ -283,9 +327,11 @@ class OrderService extends cds.ApplicationService {
                 //  add the product as new order line item
                 orderID = purchaseOrder.orderID;
                 newpurchaseOrder = purchaseOrder;
-                const { maxID } = await srv.tx(req).run(SELECT.one`max(itemID) as maxID`.from(OrderItems).where({ to_Order_orderUUID: purchaseOrder.orderUUID }));
-              console.log(maxID)
-                if (!maxID) itemID = 1
+                const { maxID } = await SELECT.one`max(itemID) as maxID`.from(OrderItems).where({ to_Order_orderUUID: purchaseOrder.orderUUID });                
+             //   const { maxID } = await srv.tx(req).run(SELECT.one`max(itemID) as maxID`.from(OrderItems).where({ to_Order_orderUUID: purchaseOrder.orderUUID }));
+                 console.log(maxID)
+                
+                 if (!maxID) itemID = 1
                 else {
                     itemID = maxID + 1
                 }
@@ -317,11 +363,8 @@ class OrderService extends cds.ApplicationService {
             else {
                 console.log('order not found; new order created');
                 // create a new order
-//                const { maxID } = await srv.tx(req).run(SELECT.one`max(orderID) as maxID`.from(Orders))
-  //              const [{ maxID }] = await srv.tx(req).run(`SELECT MAX(orderID) as maxID FROM "Orders"`);
-  const { maxID } = await SELECT.one`max(orderID) as maxID`.from(Orders);
- // const { maxID } = await srv.tx(req).run(SELECT.one`max(orderID) as maxID`.from(Orders));
-  console.log(maxID)
+                  const { maxID } = await SELECT.one`max(orderID) as maxID`.from(Orders);
+                // console.log(maxID)
                 if (!maxID) orderID = 1
                 else {
                     orderID = maxID + 1
@@ -354,8 +397,10 @@ class OrderService extends cds.ApplicationService {
 
             if (newpurchaseOrderItem && Object.keys(newpurchaseOrderItem).length > 0) {
                 console.log('insert order item to persistense');
-                await srv.tx(req).run(INSERT.into('OrderItems').entries(newpurchaseOrderItem[0]));
-                await srv.tx(req).run(UPDATE(OrderItems).set({ netPrice: price * newpurchaseOrderItem.quantity, unitPrice: price }).where({ itemUUID: newpurchaseOrderItem[0].itemUUID }));
+           //     await srv.tx(req).run(INSERT.into('OrderItems').entries(newpurchaseOrderItem[0]));
+
+                await srv.tx(req).run(INSERT.into('OrderItems').entries(newpurchaseOrderItem));
+             //   await srv.tx(req).run(UPDATE(OrderItems).set({ netPrice: price * newpurchaseOrderItem.quantity, unitPrice: price }).where({ itemUUID: newpurchaseOrderItem[0].itemUUID }));
 
             }
             else {
@@ -363,12 +408,8 @@ class OrderService extends cds.ApplicationService {
                 await srv.tx(req).run(UPDATE(OrderItems).set({ quantity: updpurchaseOrderItem.quantity, netPrice: updpurchaseOrderItem.netPrice }).where({ itemUUID: updpurchaseOrderItem.itemUUID }));
             }
 
-            const { sum } = await srv.tx(req).run(SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: newpurchaseOrderItem[0].to_Order_orderUUID }));
-            const discount = (sum * .03).toFixed(2) ;
-            const tax = ((sum - discount) * 0.07).toFixed(2) ;           
-            const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
-            await cds.run(UPDATE(Orders).set({ tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: newpurchaseOrderItem[0].to_Order_orderUUID }));
-            // return a message order is added
+
+           // return a message order is added
             req.info(`Product added to order '${orderID}'`);
 
         })
@@ -552,15 +593,15 @@ class OrderService extends cds.ApplicationService {
 
         this.on('createOrderByTemplate', async (req) => {
 
-            const { orderUUID } = req.params[0];
-            const srv = await cds.connect.to('OrderService')
-               console.log(req.params);
-                console.log(orderUUID);
 
-                     // Fetch the purchase order to be copied
-                     const [purchaseOrder] = await SELECT.from(req.subject).where({ orderUUID: orderUUID });
-                     if (!purchaseOrder) throw new Error(`Sales order with UUID ${orderUUID} not found`);
-                     const purchaseOrderItems = await srv.tx(req).run(SELECT.from('OrderTemplateItem').where({ to_Order_orderUUID: orderUUID }));
+            const srv = await cds.connect.to('OrderService')
+            const { orderUUID } = req.params[0];
+
+            // Fetch the purchase order to be copied
+            const [purchaseOrder] = await SELECT.from(req.subject).where({ orderUUID: orderUUID });
+            if (!purchaseOrder) throw new Error(`order with UUID ${orderUUID} not found`);
+
+            const purchaseOrderItems = await srv.tx(req).run(SELECT.from('OrderTemplateItem').where({ to_Order_orderUUID: orderUUID }));
 
             // Create a new  purchase order with the copied data
             const newpurchaseOrder = { ...purchaseOrder, orderUUID: cds.utils.uuid() };
@@ -569,23 +610,19 @@ class OrderService extends cds.ApplicationService {
                 itemUUID: cds.utils.uuid(),
                 to_Order_orderUUID: newpurchaseOrder.orderUUID
             }));
-          //  newpurchaseOrder.to_Customer_customerID = CUSTOMER; to be replaced with param input
-
-          await srv.tx(req).run(INSERT.into('Orders').entries(newpurchaseOrder));
-          await srv.tx(req).run(INSERT.into('OrderItems').entries(newpurchaseOrderItems));
-          await this._updateOrderLineItem(newpurchaseOrder.orderUUID, req, srv)
+            newpurchaseOrder.to_Customer_customerID = CUSTOMER;
 
 
-          const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderItems).where({ to_Order_orderUUID: newpurchaseOrder.orderUUID })
-          // console.log(sum);
-          const discount = (sum * .03).toFixed(2) ;
-          const tax = ((sum - discount) * 0.07).toFixed(2) ;           
-          const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
-          await cds.run(UPDATE(Orders).set({ tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: newpurchaseOrder.orderUUID }));
 
+            await srv.tx(req).run(INSERT.into('Orders').entries(newpurchaseOrder));
+            await srv.tx(req).run(INSERT.into('OrderItems').entries(newpurchaseOrderItems));
+            await this._updateOrderLineItem(newpurchaseOrder.orderUUID, req, srv)
 
-          req.info(`Added to order '${newpurchaseOrder.orderID}'`);
+           console.log('creation of order from template done');
+ 
+            req.info(`Added to order '${newpurchaseOrder.orderID}'`);
 
+      
         });
 
         return super.init()
@@ -650,27 +687,12 @@ class AdminService extends cds.ApplicationService {
      */
         const { Products, OrderTemplate, OrderTemplateItem } = this.entities
 
- 
-
-        // create a function to update unit price and net price for order line items using uuid
-
-        this._updateOrderLineItem = async function (orderUUID, req, srv) {
-            const orderLineItems = await srv.tx(req).run(SELECT.from('OrderItems').where({ to_Order_orderUUID: orderUUID }));
-            for (let i = 0; i < orderLineItems.length; i++) {
-                const { price } = await srv.tx(req).run(SELECT.one().from(Products).where({ productID: orderLineItems[i].to_Product_productID }));
-                orderLineItems[i].netPrice = price * orderLineItems[i].quantity;
-                orderLineItems[i].unitPrice = price;
-                const result = await srv.tx(req).run(UPDATE(OrderItems).set({ netPrice: price * orderLineItems[i].quantity, unitPrice: price }).where({ itemUUID: orderLineItems[i].itemUUID }));
-            }
-        }
-
-
         /**
      * Fill in primary keys and defaults for new order.
   
         */
         this.before('CREATE', 'OrderTemplate', async req => {
-            console.log('before handler >> orderTemplate');
+            console.log('AdminService: before create handler >> orderTemplate');
             const { maxID } = await SELECT.one`max(orderID) as maxID`.from(OrderTemplate)
             if (!maxID) req.data.orderID = 1
             else {
@@ -683,7 +705,7 @@ class AdminService extends cds.ApplicationService {
          * Fill in defaults for new item when adding products to order.
          */
                 this.before('CREATE', 'OrderTemplateItem', async (req) => {
-                    console.log('before handler >> orderTemplate Item');
+                    console.log('AdminService : before create handler >> orderTemplate Item');
                     console.log('  create before OrderTemplateItem called', req.data);
                     const { to_Order_orderUUID } = req.data
                     const { maxID } = await SELECT.one`max(itemID) as maxID`.from(OrderTemplateItem).where({ to_Order_orderUUID })
@@ -697,7 +719,7 @@ class AdminService extends cds.ApplicationService {
          * Fill in defaults for new item when editing order.
          */
         this.before('NEW', 'OrderTemplateItem.drafts', async (req) => {
-            console.log('New handler >> orderTemplateItem drafts');
+            console.log('AdminService : New before handler >> orderTemplateItem drafts');
             const { to_Order_orderUUID } = req.data
             const { maxID } = await SELECT.one`max(itemID) as maxID`.from(OrderTemplateItem).where({ to_Order_orderUUID })
             if (!maxID) req.data.itemID = 1
@@ -708,7 +730,7 @@ class AdminService extends cds.ApplicationService {
 
         
         this.after(['PATCH','UPDATE'], 'OrderTemplateItem.drafts', async (_, req) => {
-            console.log('after handler >> orderTemplateItem drafts');
+            console.log('AdminService : after update/patch handler >> orderTemplateItem drafts');
             if ('quantity' in req.data) {
                 const { itemUUID } = req.data;
                 const { to_Product_productID } = await SELECT.one().from(OrderTemplateItem.drafts).where({ itemUUID });
@@ -737,7 +759,7 @@ class AdminService extends cds.ApplicationService {
 
 
         this.before(['PATCH','UPDATE'], 'OrderTemplateItem', async (req) => {
-            console.log('  update before OrderTemplateItem called');
+            console.log('  AdminService : before update handler >> OrderTemplateItem called');
             console.log(req.data);
             let newQuantity = 0;
             const { itemUUID } = req.data;
@@ -756,7 +778,7 @@ class AdminService extends cds.ApplicationService {
         });
 
         this.after(['PATCH','UPDATE'],  'OrderTemplateItem', async (_, req) => {
-            console.log('  update after OrderTemplateItem called');
+            console.log('  AdminService : after update/patch >> OrderTemplateItem called');
             const { itemUUID } = req.data;
             const { to_Order_orderUUID } = await SELECT.one().from(OrderTemplateItem).where({ itemUUID });
             const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderTemplateItem).where({ to_Order_orderUUID: to_Order_orderUUID })
@@ -775,7 +797,7 @@ class AdminService extends cds.ApplicationService {
 
 
         this.before(['PATCH','UPDATE'], 'OrderTemplate', async (req) => {
-            console.log('  update OrderTemplate >> before handler called')
+            console.log('  AdminService : before update >> OrderTemplate called')
        //     const { orderStatus } = await SELECT.one`orderStatus`.from(OrderTemplate).where({ orderUUID: req.data.orderUUID })
        //     if (orderStatus === 'C' || orderStatus === 'A') req.reject(403, 'Order cannot be updated')
 
@@ -808,7 +830,7 @@ class AdminService extends cds.ApplicationService {
 
                 this.after('DELETE', "OrderTemplateItem.drafts", async (_, req) => {
 
-                    console.log('  delete OrderTemplate >> AFTER handler called')
+                    console.log(' AdminService : after delete handler >> OrderTemplate ')
                     const max =   await SELECT.one`count(*) as max`.from(OrderTemplateItem.drafts).where({ itemUUID: req.data.itemUUID }); 
                    if (max > 1) {
                        const {to_Order_orderUUID} = await SELECT.one().from(OrderTemplateItem.drafts).where({ itemUUID: req.data.itemUUID }); 
@@ -830,6 +852,8 @@ class AdminService extends cds.ApplicationService {
 
 
         this.after(['PATCH','UPDATE'],'OrderTemplate', async (_, req) => {
+
+            console.log(' AdminService : after patch/delete handler >> OrderTemplate ')
             const { orderUUID } = req.data;
             //       console.log(req.data);
             const { sum } = await SELECT.one`sum(netPrice) as sum`.from(OrderTemplateItem).where({ to_Order_orderUUID: orderUUID })
@@ -847,39 +871,46 @@ class AdminService extends cds.ApplicationService {
 
 
         this.on('createOrderByTemplate', async (req) => {
-
+            console.log(' AdminService : createOrderByTemplate handler');
+          //  console.log(req.data);
+            const {customerID} = req.data;
             const { orderUUID } = req.params[0];
             const srv = await cds.connect.to('OrderService')
-               console.log(req.params);
-               console.log(orderUUID);
+            //   console.log(req.params);
+            //   console.log(orderUUID);
 
                // Fetch the purchase order to be copied
             const [purchaseOrder] = await SELECT.from(req.subject).where({ orderUUID: orderUUID });
             if (!purchaseOrder) throw new Error(`Sales order with UUID ${orderUUID} not found`);
              const purchaseOrderItems = await srv.tx(req).run(SELECT.from('OrderTemplateItem').where({ to_Order_orderUUID: orderUUID }));
+ 
+           //     console.log('retrieved items from template');
+          //      console.log(purchaseOrderItems);
 
             // Create a new  purchase order with the copied data
-            const newpurchaseOrder = { ...purchaseOrder, orderUUID: cds.utils.uuid() };
+            const newpurchaseOrder = { ...purchaseOrder, orderUUID: cds.utils.uuid()};
+            
+            //string to float
+            newpurchaseOrder.discount = parseFloat(newpurchaseOrder.discount);
+            newpurchaseOrder.tax = parseFloat(newpurchaseOrder.tax);
+            newpurchaseOrder.totalAmount = parseFloat(newpurchaseOrder.totalAmount);
+            
             const newpurchaseOrderItems = purchaseOrderItems.map(item => ({
                 ...item,
                 itemUUID: cds.utils.uuid(),
-                to_Order_orderUUID: newpurchaseOrder.orderUUID
+                to_Order_orderUUID: newpurchaseOrder.orderUUID,
+                netPrice : (parseFloat(item.unitPrice) * parseFloat(item.quantity)).toFixed(2),
+                unitPrice : parseFloat(item.unitPrice)
             }));
-          //  newpurchaseOrder.to_Customer_customerID = CUSTOMER; to be replaced with param input
+
+          newpurchaseOrder.to_Customer_customerID = customerID;   
+          newpurchaseOrder.orderNotes = `Copied from template ${purchaseOrder.orderID}`;
 
           await srv.tx(req).run(INSERT.into('Orders').entries(newpurchaseOrder));
           //insert each item of newpurchaseOrderItems to OrderItems
             for (let i = 0; i < newpurchaseOrderItems.length; i++) {
                 await srv.tx(req).run(INSERT.into('OrderItems').entries(newpurchaseOrderItems[i]));
-                await srv.tx(req).run(UPDATE('OrderItems').set({ netPrice: newpurchaseOrderItems[i].quantity * newpurchaseOrderItems[i].unitPrice }).where({ itemUUID: newpurchaseOrderItems[i].itemUUID }));
             }
-          const { sum } = await SELECT.one`sum(netPrice) as sum`.from('OrderItems').where({ to_Order_orderUUID: newpurchaseOrder.orderUUID })
-          console.log(sum);
-          const discount = (sum * .03).toFixed(2) ;
-          const tax = ((sum - discount) * 0.07).toFixed(2) ;           
-          const totalAmount =  ( parseFloat(sum) + parseFloat(tax) - parseFloat(discount)).toFixed(2) ;
-          await cds.run(UPDATE(Orders).set({ tax: tax, totalAmount: totalAmount, discount: discount }).where({ orderUUID: newpurchaseOrder.orderUUID }));
-
 
           req.info(`Added to order '${newpurchaseOrder.orderID}'`);
 

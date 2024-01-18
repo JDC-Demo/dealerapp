@@ -31,7 +31,7 @@ annotate OrderService.Orders with @(
 
 annotate OrderService.Orders with @(
   UI.LineItem : [
-    //{ $Type  : 'UI.DataFieldForAction', Action : 'OrderService.createOrderByTemplate',   Label  : '{i18n>CopyTemplateOrder}'   },
+    { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.confirmOrder',   Label  : '{i18n>ConfirmOrder}'   },
     { Value : orderID },
     { Value : to_Customer.companyName,   ![@UI.Importance]: #High, ![@UI.NavigationProperty]: true  },
     { Value : description },
@@ -103,9 +103,11 @@ annotate OrderService.Orders with @(
 
   ]);
 
+ 
 annotate OrderService.Orders with @(
   UI.FieldGroup #GeneralInformation : {
     Data : [ 
+    { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.confirmOrder',   Label  : '{i18n>ConfirmOrder}'   },
    //   { Value : orderID  },
       { Value : description},
       { Value : to_Customer_customerID },
@@ -115,9 +117,11 @@ annotate OrderService.Orders with @(
       { Value : discount },
       { Value : tax },
       { Value : orderStatus_code },
-      { Value : orderNotes }
+      { Value : orderNotes, ![@UI.MultiLineText]: true } 
     ]
   });
+
+
 
 annotate OrderService.Orders with @(
   UI.FieldGroup #PaymentDetails : {
@@ -275,14 +279,15 @@ annotate OrderService.ProductCatalogue with @(
             { Value: productName, Label: '{i18n>ProductName}' },
             { Value: productDescription, Label: '{i18n>ProductDescription}' },
             { Value: price, Label: '{i18n>Price}' },
+             { Value: stockQuantity, Label: '{i18n>StockQuantity}' },
             { Value: productCategory, Label: '{i18n>ProductCategory}' },
             { Value: productModel, Label: '{i18n>ProductModel}' },
             { Value: productBrand, Label: '{i18n>ProductBrand}' },
-            { Value: productYear, Label: '{i18n>ProductYear}' },
+            { Value: productYear, Label: '{i18n>ProductYear}' }
       //      { Value: productColor, Label: '{i18n>ProductColor}' },
       //      { Value: productSize, Label: '{i18n>ProductSize}' },
       //      { Value: productCondition, Label: '{i18n>ProductCondition}' },
-            { Value: stockQuantity, Label: '{i18n>StockQuantity}' }
+           
         ],
         SelectionFields: [
             productName, productID, productModel 
@@ -484,7 +489,7 @@ annotate OrderService.OrderTemplate with @(
       Property   : orderID 
       }]},
 LineItem : [
-    { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.addFromTemplateToOrder',   Label  : '{i18n>AddToOrder}'   },
+    { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.addFromTemplateToOrder',   Label  : '{i18n>CopyTemplateOrder}'   },
     { Value : orderID },
     { Value : description },
     { Value : totalAmount ,  ![@UI.Importance]: #High},
@@ -513,7 +518,7 @@ LineItem : [
 FieldGroup #GeneralInformation : {
     Data : [ 
    //   { Value : orderID  },
-      { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.addFromTemplateToOrder',   Label  : '{i18n>AddToOrder}'   },
+      { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.addFromTemplateToOrder',   Label  : '{i18n>CopyTemplateOrder}'   },
       { Value : description},
       { Value : totalAmount },
       { Value : discount },

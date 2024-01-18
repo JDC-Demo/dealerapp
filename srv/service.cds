@@ -8,6 +8,15 @@ using { my.motorsport as masterdataschema } from '../db/master-data';
 @requires: 'authenticated-user'  
 service OrderService {
 
+
+  
+//add a label for comment
+/*
+type inText : {
+  comment: String ;// @title: 'Comment';
+};
+
+*/
   /* @(restrict: [
     { grant: ['*'], to: 'authenticated-user'}
   //  { grant: 'READ', to: 'authenticated-user'},
@@ -15,7 +24,9 @@ service OrderService {
   ]) */
   entity Orders as projection on orderschema.Order actions { 
     action createOrderByTemplate ();// returns Orders;
+    action confirmOrder();  //(text:inText:comment);
   };
+
    entity OrderItems as projection on orderschema.OrderItem;
 
   @readonly   entity OrderTemplate as projection on orderschema.OrderTemplate actions {
@@ -37,10 +48,16 @@ service AdminService {
 
   ])
 */
+
+type paramin : {
+  customerID: Integer ;// @title: 'Comment';
+};
+
+
   entity Customers as projection on masterdataschema.Customer;
   entity Products as projection on masterdataschema.Product;
   entity OrderTemplate as projection on orderschema.OrderTemplate actions {
-    action createOrderByTemplate() ;
+    action createOrderByTemplate(customerID:paramin:customerID) ;
   };
   entity OrderTemplateItem  as projection on orderschema.OrderTemplateItem; 
 } 
@@ -63,4 +80,7 @@ service ProductService {
   
   entity Products as projection on masterdataschema.Product;
 
-}
+};
+
+
+ 

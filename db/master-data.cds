@@ -10,7 +10,7 @@ entity Product : MasterData ,managed{
   productName: String;
   productDescription: String;
   price: Decimal(10, 2); 
-  currencyCode   : Currency;
+  currencyCode   : Currency default 'USD';
   category: String; 
   image: String  @UI : {IsImageURL : true};// This can store a reference to the image location
     // Additional fields

@@ -97,15 +97,11 @@ annotate AdminService.Products with @(
             { Value: productName, Label: '{i18n>ProductName}' },
             { Value: productDescription, Label: '{i18n>ProductDescription}' },
             { Value: price, Label: '{i18n>Price}' },
-    //        { Value: currencyCode_code, Label: '{i18n>CurrencyCode}'},
+             { Value: stockQuantity, Label: '{i18n>StockQuantity}' },
             { Value: productCategory, Label: '{i18n>ProductCategory}' },
             { Value: productModel, Label: '{i18n>ProductModel}' },
             { Value: productBrand, Label: '{i18n>ProductBrand}' },
-            { Value: productYear, Label: '{i18n>ProductYear}' },
-  //          { Value: productColor, Label: '{i18n>ProductColor}' },
-  //          { Value: productSize, Label: '{i18n>ProductSize}' },
-  //          { Value: productCondition, Label: '{i18n>ProductCondition}' },
-            { Value: stockQuantity, Label: '{i18n>StockQuantity}' }
+            { Value: productYear, Label: '{i18n>ProductYear}' }
         ],
         SelectionFields: [
             productName, productID, productModel 
@@ -120,6 +116,7 @@ annotate AdminService.Products with @(
             Data: [
                 { Value: productID, Label: '{i18n>ProductID}' },
                 { Value: productName, Label: '{i18n>ProductName}' },
+                { Value: productDescription, Label: '{i18n>ProductDescription}' },
                 { Value: price, Label: '{i18n>Price}' },
         //        { Value: currencyCode_code, Label: '{i18n>CurrencyCode}'},
                 { Value: productCategory, Label: '{i18n>ProductCategory}' }
@@ -166,8 +163,8 @@ annotate AdminService.OrderTemplate with @(
       Property   : orderID 
       }]},
 LineItem : [
-    { $Type  : 'UI.DataFieldForAction', Action : 'AdminService.createOrderByTemplate',   Label  : '{i18n>AddToOrder}'   },
-    { Value : orderID },
+    { $Type  : 'UI.DataFieldForAction', Action : 'AdminService.createOrderByTemplate',   Label  : '{i18n>CopyTemplateOrder}'   },
+    { Value : orderID ,  Label  : 'Template ID' },
     { Value : description },
     { Value : totalAmount ,  ![@UI.Importance]: #High},
     { Value : orderNotes}
@@ -195,7 +192,7 @@ LineItem : [
 FieldGroup #GeneralInformation : {
     Data : [ 
    //   { Value : orderID  },
-      { $Type  : 'UI.DataFieldForAction', Action : 'AdminService.createOrderByTemplate',   Label  : '{i18n>AddToOrder}'   },
+      { $Type  : 'UI.DataFieldForAction', Action : 'AdminService.createOrderByTemplate',   Label  : '{i18n>CopyTemplateOrder}'   },
       { Value : description},
       { Value : totalAmount },
       { Value : discount },

@@ -13,7 +13,7 @@
         "sourceTemplate": {
             "id": "@sap/generator-fiori:lrop",
             "version": "1.12.1",
-            "toolsId": "c3c153fb-5423-4f60-b41e-66cd46c541ca"
+            "toolsId": "30d51401-cd83-4cd3-9e1e-6201ab03b45a"
         },
         "dataSources": {
             "mainService": {
@@ -134,23 +134,7 @@
                                     }
                                 }
                             },
-                            "initialLoad": "Enabled",
-                            "controlConfiguration": {
-                                "@com.sap.vocabularies.UI.v1.LineItem": {
-                                    "tableSettings": {
-                                        "selectionMode": "Single",
-                                        "personalization": {
-                                            "column": true,
-                                            "filter": true,
-                                            "sort": true
-                                        },
-                                        "quickVariantSelection": {
-                                            "hideTableTitle": true,
-                                            "showCounts": true
-                                        }
-                                    }
-                                }
-                            }
+                            "initialLoad": "Enabled"
                         }
                     },
                     "controlAggregation": "beginColumnPages",

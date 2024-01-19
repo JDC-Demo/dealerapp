@@ -1,5 +1,6 @@
 using OrderService as service from '../../srv/service';
 using from '../label';
+using from '../layout';
 
 
 
@@ -20,3 +21,22 @@ annotate service.Orders with {
         },
         Common.ValueListWithFixedValues : true
 )};
+annotate service.Orders with @(
+    UI.PresentationVariant : {
+        Text : 'Default',
+        Visualizations : [
+            '@UI.LineItem',
+        ],
+        SortOrder : [
+            {
+                $Type : 'CommonI.SortOrderType',
+                Property : orderID,
+            },
+            {
+                $Type : 'Common.SortOrderType',
+                Property : orderID,
+                Descending : true,
+            },
+        ],
+    }
+);

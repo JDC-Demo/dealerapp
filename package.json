@@ -64,7 +64,8 @@
     "watch-admin-ordertemplates": "cds watch --open admin-ordertemplates/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-ordertemplates": "cds watch --open ordertemplates/webapp/index.html?sap-ui-xx-viewCache=false",
     "watch-products": "cds watch --open products/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-orders": "cds watch --open orders/webapp/index.html?sap-ui-xx-viewCache=false"
+    "watch-orders": "cds watch --open orders/webapp/index.html?sap-ui-xx-viewCache=false",
+    "watch-custtest": "cds watch --open custtest/webapp/index.html?sap-ui-xx-viewCache=false"
   },
   "sapux": [
     "app/dearlerapp",
@@ -77,6 +78,8 @@
     "app/admin-ordertemplates",
     "app/ordertemplates",
     "app/products",
-    "app/orders"
+    "app/orders",
+    "app/custtest",
+    "app/ordertemplates"
   ]
 }

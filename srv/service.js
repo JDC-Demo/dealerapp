@@ -662,17 +662,21 @@ class ProductService extends cds.ApplicationService {
      * Reflect definitions from the service's CDS model
      */
         const { Products } = this.entities
-/*
-        this.before('CREATE', 'Products', async req => {
-            const { maxID } = await SELECT.one`max(productID) as maxID`.from(Products)
-            if (!maxID) req.data.productID = 1
-            else {
-                req.data.productID = maxID + 1
+        this.before('READ', 'Customers', async req => {
+          
+            // populate the salesdata with random vales 
+            const customers = await SELECT.from('Customers');
+            for (const customer of customers) {
+            customer.salesData = {
+            //generate random
+            //lastyear_sales: Math.floor(Math.random() * 1000), // generate a random string
+                currentyear_sales: Math.random().toString(36).substring(2, 15), // generate a random string
+                lastyear_sales: Math.random().toString(36).substring(2, 15) // generate a random string
+            };
             }
+            req.results = customers;
 
         })
-*/
-
         return super.init();
     }
 
@@ -685,16 +689,7 @@ class CustomerService extends cds.ApplicationService {
     * Reflect definitions from the service's CDS model
     */
         const { Customers } = this.entities
-/*
-        this.before('CREATE', 'Customers', async req => {
-            const { maxID } = await SELECT.one`max(customerID) as maxID`.from(Customers)
-            if (!maxID) req.data.customerID = 1
-            else {
-                req.data.customerID = maxID + 1
-            }
-
-        })
-*/
+         
 
         return super.init()
     }
@@ -710,9 +705,9 @@ class AdminService extends cds.ApplicationService {
         /**
      * Reflect definitions from the service's CDS model
      */
-        const { Products, OrderTemplate, OrderTemplateItem } = this.entities
-
-        /**
+        const { Products, OrderTemplate, OrderTemplateItem, Customers } = this.entities
+ 
+                        /**
      * Fill in primary keys and defaults for new order.
   
         */

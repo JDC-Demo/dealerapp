@@ -37,4 +37,12 @@ entity Customer :  MasterData {
   eMailAddress   : String(256);
   companyName    : String(40);
   companyAddress : String(60);
+  @virtual
+   salesData : SalesData;
+};
+
+
+type SalesData : {
+  currentyear_sales : Integer default 100000;
+  lastyear_sales : Integer default 90000;
 };

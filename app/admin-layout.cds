@@ -28,6 +28,9 @@ using { my.motorsport.Product as Product, my.motorsport.Customer as Customer} fr
         LineItem: [
             { Value: companyName, Label: '{i18n>CompanyName}' },
             { Value: companyAddress, Label: '{i18n>CompanyAddress}' },
+        //    {Value: salesData_currentyear_sales, Label : 'Current year Sales', ![@UI.Importance]: #High},
+ 
+            { Value: customerID, Label: '{i18n>CustomerID}' },
        //     { Value: firstName, Label: '{i18n>ContactFirstName}' },
        //     { Value: lastName, Label: '{i18n>ContactLastName}' },
        //     { Value: eMailAddress, Label: '{i18n>ContactEmail}' },

@@ -7,7 +7,9 @@
       "type": "shell",
       "label": "cds watch",
       "command": "cds",
-      "args": ["watch"],
+      "args": [
+        "watch"
+      ],
       "group": {
         "kind": "build",
         "isDefault": true
@@ -18,8 +20,33 @@
       "type": "shell",
       "label": "cds serve",
       "command": "cds",
-      "args": ["serve", "--with-mocks", "--in-memory?"],
+      "args": [
+        "serve",
+        "--with-mocks",
+        "--in-memory?"
+      ],
       "problemMatcher": []
+    },
+    {
+      "type": "build.mta",
+      "label": "Build MTA",
+      "taskType": "Build",
+      "projectPath": "/home/user/projects/demo/dealerapp",
+      "extensions": []
+    },
+    {
+      "type": "deploy.mta.cf",
+      "label": "Deploy MTA to Cloud Foundry",
+      "taskType": "Deploy",
+      "mtarPath": "/home/user/projects/demo/dealerapp/mta_archives/dealerapp_0.0.1.mtar",
+      "extensions": [],
+      "dependsOn": [
+        "Build MTA"
+      ],
+      "cfTarget": "",
+      "cfEndpoint": "",
+      "cfOrg": "",
+      "cfSpace": ""
     }
   ]
 }

@@ -23,7 +23,7 @@ entity Order : managed  {
   shippingMethod: String; // e.g., "Standard", "Express"
   trackingNumber: String;
   estimatedDeliveryDate: Date;
-  orderNotes: String(2048); // Any additional notes or instructions for the order
+  orderNotes: String(2048) ; // Any additional notes or instructions for the order
   billingAddress: String; // The address where the bill is sent
   discount: Decimal(10, 2); // Any discount applied to the order
   tax: Decimal(10, 2)  @Core.Computed; // Tax applied to the order
@@ -92,7 +92,7 @@ entity OrderTemplate : managed  {
   key orderUUID      : UUID @odata.Type:'Edm.String';
   orderID            : Integer @readonly @Core.Computed;
   totalAmount        : Decimal(20, 2) @Core.Computed;
-  currencyCode       : Currency;
+  currencyCode       : Currency default 'USD';
   description        : String(1024);
   to_Items           : Composition of many OrderTemplateItem on to_Items.to_Order = $self;
   orderNotes: String(2048); // Any additional notes or instructions for the order
@@ -109,7 +109,7 @@ entity OrderTemplateItem : managed {
 // pricing
   unitPrice: Decimal(10, 2) @Core.Computed;
   netPrice: Decimal(10, 2) @Core.Computed;
-  currencyCode   : Currency @Core.Computed;
+  currencyCode   : Currency default 'USD';
   discount : Decimal(10, 2)  ; // Any discount applied to the order item
     // Additional fields
   productModel: String @Core.Computed; // The model of the motorsport product

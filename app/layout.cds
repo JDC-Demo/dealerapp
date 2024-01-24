@@ -13,7 +13,7 @@ UI.HeaderInfo : {
 });
 
 annotate OrderService.Orders with @(
-  UI.SelectionFields : [ orderID ] 
+  UI.SelectionFields : [ orderID ,  to_Customer_customerID] 
 );
 
  
@@ -31,7 +31,7 @@ annotate OrderService.Orders with @(
 
 annotate OrderService.Orders with @(
   UI.LineItem : [
-    //{ $Type  : 'UI.DataFieldForAction', Action : 'OrderService.createOrderByTemplate',   Label  : '{i18n>CopyTemplateOrder}'   },
+    { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.confirmOrder',   Label  : '{i18n>ConfirmOrder}'   },
     { Value : orderID },
     { Value : to_Customer.companyName,   ![@UI.Importance]: #High, ![@UI.NavigationProperty]: true  },
     { Value : description },
@@ -103,9 +103,11 @@ annotate OrderService.Orders with @(
 
   ]);
 
+ 
 annotate OrderService.Orders with @(
   UI.FieldGroup #GeneralInformation : {
     Data : [ 
+    { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.confirmOrder',   Label  : '{i18n>ConfirmOrder}'   },
    //   { Value : orderID  },
       { Value : description},
       { Value : to_Customer_customerID },
@@ -115,9 +117,11 @@ annotate OrderService.Orders with @(
       { Value : discount },
       { Value : tax },
       { Value : orderStatus_code },
-      { Value : orderNotes }
+      { Value : orderNotes, ![@UI.MultiLineText]: true } 
     ]
   });
+
+
 
 annotate OrderService.Orders with @(
   UI.FieldGroup #PaymentDetails : {
@@ -168,7 +172,7 @@ annotate OrderService.Orders with @(
 
  
 annotate OrderService.OrderItems  with @UI : {
-    Identification                : [{Value: productID}, ],
+ //   Identification                : [{Value: productID}, ],
     HeaderInfo: {
       TypeName: 'Product',
       TypeNamePlural: 'Products',
@@ -193,12 +197,12 @@ annotate OrderService.OrderItems  with @UI : {
     { Value : unitPrice,  ![@UI.Importance]: #High},
     { Value : netPrice , ![@UI.Importance]: #High},
     { Value : to_Product.productDescription},
-    { Value : productModel },
-    { Value : productBrand },
-    { Value : productYear, ![@UI.Importance]: #High},
-    { Value : productColor,  ![@UI.Importance]: #High},
-    { Value : productSize, ![@UI.Importance]: #High},
-    { Value : productCondition,  ![@UI.Importance]: #Medium}
+    { Value : to_Product.productModel, Label : 'Product Model' },
+    { Value : to_Product.productBrand, Label : 'Product Brand' },
+    { Value : to_Product.productYear, Label : 'Product Year' }
+   // { Value : productColor,  ![@UI.Importance]: #High},
+   // { Value : productSize, ![@UI.Importance]: #High},
+   // { Value : productCondition,  ![@UI.Importance]: #Medium}
   
   ],
   Facets  : [ {  // General Information
@@ -236,12 +240,12 @@ annotate OrderService.OrderItems  with @UI : {
     Data : [ 
       { Value : to_Product.image, Label : ' ' },
       { Value : to_Product.productName, Label : 'Product Name' },
-      { Value : productModel, Label : 'Product Model' },
-      { Value : productBrand, Label : 'Product Brand' },
-      { Value : productYear, Label : 'Product Year' },
-      { Value : productColor, Label : 'Product Color' },
-      { Value : productSize, Label : 'Product Size' },
-      { Value : productCondition, Label : 'Product Condition' }
+    { Value : to_Product.productModel, Label : 'Product Model' },
+    { Value : to_Product.productBrand, Label : 'Product Brand' },
+    { Value : to_Product.productYear, Label : 'Product Year' }
+   // { Value : productColor,  ![@UI.Importance]: #High},
+   // { Value : productSize, ![@UI.Importance]: #High},
+   // { Value : productCondition,  ![@UI.Importance]: #Medium}
     ]
   }
 };
@@ -275,14 +279,15 @@ annotate OrderService.ProductCatalogue with @(
             { Value: productName, Label: '{i18n>ProductName}' },
             { Value: productDescription, Label: '{i18n>ProductDescription}' },
             { Value: price, Label: '{i18n>Price}' },
+             { Value: stockQuantity, Label: '{i18n>StockQuantity}' },
             { Value: productCategory, Label: '{i18n>ProductCategory}' },
             { Value: productModel, Label: '{i18n>ProductModel}' },
             { Value: productBrand, Label: '{i18n>ProductBrand}' },
-            { Value: productYear, Label: '{i18n>ProductYear}' },
-            { Value: productColor, Label: '{i18n>ProductColor}' },
-            { Value: productSize, Label: '{i18n>ProductSize}' },
-            { Value: productCondition, Label: '{i18n>ProductCondition}' },
-            { Value: stockQuantity, Label: '{i18n>StockQuantity}' }
+            { Value: productYear, Label: '{i18n>ProductYear}' }
+      //      { Value: productColor, Label: '{i18n>ProductColor}' },
+      //      { Value: productSize, Label: '{i18n>ProductSize}' },
+      //      { Value: productCondition, Label: '{i18n>ProductCondition}' },
+           
         ],
         SelectionFields: [
             productName, productID, productModel 
@@ -305,10 +310,10 @@ annotate OrderService.ProductCatalogue with @(
             Data: [
                 { Value: productModel, Label: '{i18n>ProductModel}' },
                 { Value: productBrand, Label: '{i18n>ProductBrand}' },
-                { Value: productYear, Label: '{i18n>ProductYear}' },
-                { Value: productColor, Label: '{i18n>ProductColor}' },
-                { Value: productSize, Label: '{i18n>ProductSize}' },
-                { Value: productCondition, Label: '{i18n>ProductCondition}' }
+                { Value: productYear, Label: '{i18n>ProductYear}' }
+   //             { Value: productColor, Label: '{i18n>ProductColor}' },
+   //             { Value: productSize, Label: '{i18n>ProductSize}' },
+   //             { Value: productCondition, Label: '{i18n>ProductCondition}' }
             ]
         },
         FieldGroup#Stock: {
@@ -334,8 +339,8 @@ annotate OrderService.ProductCatalogue with @(
         },
         Identification: [
             { Value: customerID, Label: '{i18n>CustomerID}' },
-            { Value: firstName, Label: '{i18n>FirstName}' },
-            { Value: lastName, Label: '{i18n>LastName}' },
+      //      { Value: firstName, Label: '{i18n>FirstName}' },
+      //      { Value: lastName, Label: '{i18n>LastName}' },
             { Value: companyName, Label: '{i18n>CompanyName}' }
         ],
         PresentationVariant: {
@@ -348,8 +353,6 @@ annotate OrderService.ProductCatalogue with @(
         LineItem: [
             { Value: companyName, Label: '{i18n>CompanyName}' },
             { Value: companyAddress, Label: '{i18n>CompanyAddress}' },
-            { Value: firstName, Label: '{i18n>ContactFirstName}' },
-            { Value: lastName, Label: '{i18n>ContactLastName}' },
             { Value: eMailAddress, Label: '{i18n>ContactEmail}' },
             { Value: phoneNumber, Label: '{i18n>PhoneNumber}' }
         ],
@@ -422,9 +425,9 @@ annotate ProductService.Products with @(
             { Value: productModel, Label: '{i18n>ProductModel}' },
             { Value: productBrand, Label: '{i18n>ProductBrand}' },
             { Value: productYear, Label: '{i18n>ProductYear}' },
-            { Value: productColor, Label: '{i18n>ProductColor}' },
-            { Value: productSize, Label: '{i18n>ProductSize}' },
-            { Value: productCondition, Label: '{i18n>ProductCondition}' },
+     //       { Value: productColor, Label: '{i18n>ProductColor}' },
+     //       { Value: productSize, Label: '{i18n>ProductSize}' },
+     //       { Value: productCondition, Label: '{i18n>ProductCondition}' },
             { Value: stockQuantity, Label: '{i18n>StockQuantity}' }
         ],
         SelectionFields: [
@@ -449,10 +452,10 @@ annotate ProductService.Products with @(
             Data: [
                 { Value: productModel, Label: '{i18n>ProductModel}' },
                 { Value: productBrand, Label: '{i18n>ProductBrand}' },
-                { Value: productYear, Label: '{i18n>ProductYear}' },
-                { Value: productColor, Label: '{i18n>ProductColor}' },
-                { Value: productSize, Label: '{i18n>ProductSize}' },
-                { Value: productCondition, Label: '{i18n>ProductCondition}' }
+                { Value: productYear, Label: '{i18n>ProductYear}' }
+             //   { Value: productColor, Label: '{i18n>ProductColor}' },
+             //   { Value: productSize, Label: '{i18n>ProductSize}' },
+             //   { Value: productCondition, Label: '{i18n>ProductCondition}' }
             ]
         },
         FieldGroup#Stock: {
@@ -473,8 +476,8 @@ annotate ProductService.Products with @(
 annotate OrderService.OrderTemplate with @(
     UI: {
       HeaderInfo: {
-        TypeName : 'Order',
-        TypeNamePlural : 'Orders ',
+        TypeName : 'Template',
+        TypeNamePlural : 'Templates ',
         Title : { Value : orderID },
         Description : { Value : description },
         SelectionFields : [ orderID ] },
@@ -486,7 +489,7 @@ annotate OrderService.OrderTemplate with @(
       Property   : orderID 
       }]},
 LineItem : [
-    { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.addFromTemplateToOrder',   Label  : '{i18n>AddToOrder}'   },
+    { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.addFromTemplateToOrder',   Label  : '{i18n>CopyTemplateOrder}'   },
     { Value : orderID },
     { Value : description },
     { Value : totalAmount ,  ![@UI.Importance]: #High},
@@ -515,7 +518,7 @@ LineItem : [
 FieldGroup #GeneralInformation : {
     Data : [ 
    //   { Value : orderID  },
-      { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.addFromTemplateToOrder',   Label  : '{i18n>AddToOrder}'   },
+      { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.addFromTemplateToOrder',   Label  : '{i18n>CopyTemplateOrder}'   },
       { Value : description},
       { Value : totalAmount },
       { Value : discount },
@@ -559,12 +562,12 @@ annotate OrderService.OrderTemplateItem  with @UI : {
     { Value : unitPrice,  ![@UI.Importance]: #High},
     { Value : netPrice , ![@UI.Importance]: #High},
     { Value : to_Product.productDescription},
-    { Value : productModel },
-    { Value : productBrand },
-    { Value : productYear, ![@UI.Importance]: #High},
-    { Value : productColor,  ![@UI.Importance]: #High},
-    { Value : productSize, ![@UI.Importance]: #High},
-    { Value : productCondition,  ![@UI.Importance]: #Medium}
+    { Value : to_Product.productModel, Label : 'Product Model' },
+    { Value : to_Product.productBrand, Label : 'Product Brand' },
+    { Value : to_Product.productYear, Label : 'Product Year' }
+   // { Value : productColor,  ![@UI.Importance]: #High},
+   // { Value : productSize, ![@UI.Importance]: #High},
+   // { Value : productCondition,  ![@UI.Importance]: #Medium}
   
   ],
   Facets  : [ {  // General Information
@@ -602,12 +605,12 @@ annotate OrderService.OrderTemplateItem  with @UI : {
     Data : [ 
       { Value : to_Product.image, Label : ' ' },
       { Value : to_Product.productName, Label : 'Product Name' },
-      { Value : productModel, Label : 'Product Model' },
-      { Value : productBrand, Label : 'Product Brand' },
-      { Value : productYear, Label : 'Product Year' },
-      { Value : productColor, Label : 'Product Color' },
-      { Value : productSize, Label : 'Product Size' },
-      { Value : productCondition, Label : 'Product Condition' }
+      { Value : to_Product.productModel, Label : 'Product Model' },
+      { Value : to_Product.productBrand, Label : 'Product Brand' },
+      { Value : to_Product.productYear, Label : 'Product Year' }
+    //  { Value : productColor, Label : 'Product Color' },
+    //  { Value : productSize, Label : 'Product Size' },
+    //  { Value : productCondition, Label : 'Product Condition' }
     ]
   }
 };

@@ -1,4 +1,0 @@
-itemUUID,itemID,to_product_productID,quantity,unitPrice,netPrice,currencyCode_code,discount,productModel,productBrand,productYear,productColor,productSize,productCondition,to_Order_orderUUID
-8b61f8a6-ec8a-4a1a-8b57-3c0c2fb9c39b,1,4,10,6999.00,69990.00,USD,6500.00,Model1,Yamaha,2024,Red,Medium,New,8b61f8a6-ec8a-4a1a-8b57-3c0c2fb9c39b
-5b61f8a6-ec8a-4a1a-8b57-3c0c2fb9c39b,2,5,5,8999.00,44995.00,USD,4567.00,Model2,Yamaha,2024,Blue,Large,New,8b61f8a6-ec8a-4a1a-8b57-3c0c2fb9c39b
-3b61f8a6-ec8a-4a1a-8b57-3c0c2fb9c39b,3,6,20,4555.00,911000.00,USD,5800.00,Model3,Yamaha,2024,Green,Small,New,8b61f8a6-ec8a-4a1a-8b57-3c0c2fb9c39b

@@ -13,7 +13,7 @@
     "sourceTemplate": {
       "id": "@sap/generator-fiori:lrop",
       "version": "1.12.1",
-      "toolsId": "0d549652-6af8-44df-a69d-abb83dd90671"
+      "toolsId": "6a9a2c1c-1e7c-4814-9fda-1cde243d7c50"
     },
     "dataSources": {
       "mainService": {
@@ -23,6 +23,19 @@
           "annotations": [],
           "localUri": "localService/metadata.xml",
           "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "Order-Manage": {
+          "semanticObject": "Order",
+          "action": "Manage",
+          "title": "{{flpTitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
         }
       }
     }
@@ -51,7 +64,8 @@
         "sap.m": {},
         "sap.ui.core": {},
         "sap.ushell": {},
-        "sap.fe.templates": {}
+        "sap.fe.templates": {},
+        "sap.f": {}
       }
     },
     "contentDensities": {
@@ -84,22 +98,37 @@
       "css": []
     },
     "routing": {
-      "config": {},
+      "config": {
+        "flexibleColumnLayout": {
+          "defaultTwoColumnLayoutType": "TwoColumnsBeginExpanded",
+          "defaultThreeColumnLayoutType": "ThreeColumnsMidExpanded"
+        },
+        "routerClass": "sap.f.routing.Router"
+      },
       "routes": [
         {
           "pattern": ":?query:",
           "name": "OrdersList",
-          "target": "OrdersList"
+          "target": [
+            "OrdersList"
+          ]
         },
         {
           "pattern": "Orders({key}):?query:",
           "name": "OrdersObjectPage",
-          "target": "OrdersObjectPage"
+          "target": [
+            "OrdersList",
+            "OrdersObjectPage"
+          ]
         },
         {
           "pattern": "Orders({key})/to_Items({key2}):?query:",
           "name": "OrderItemsObjectPage",
-          "target": "OrderItemsObjectPage"
+          "target": [
+            "OrdersList",
+            "OrdersObjectPage",
+            "OrderItemsObjectPage"
+          ]
         }
       ],
       "targets": {
@@ -117,9 +146,12 @@
                     "route": "OrdersObjectPage"
                   }
                 }
-              }
+              },
+              "initialLoad": "Enabled"
             }
-          }
+          },
+          "controlAggregation": "beginColumnPages",
+          "contextPattern": ""
         },
         "OrdersObjectPage": {
           "type": "Component",
@@ -137,7 +169,9 @@
                 }
               }
             }
-          }
+          },
+          "controlAggregation": "midColumnPages",
+          "contextPattern": "/Orders({key})"
         },
         "OrderItemsObjectPage": {
           "type": "Component",
@@ -148,13 +182,25 @@
               "editableHeaderContent": false,
               "contextPath": "/Orders/to_Items"
             }
-          }
+          },
+          "controlAggregation": "endColumnPages",
+          "contextPattern": "/Orders({key})/to_Items({key2})"
         }
       }
+    },
+    "rootView": {
+      "viewName": "sap.fe.templates.RootContainer.view.Fcl",
+      "type": "XML",
+      "async": true,
+      "id": "appRootView"
     }
   },
   "sap.fiori": {
     "registrationIds": [],
     "archeType": "transactional"
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "managedapprouter"
   }
 }

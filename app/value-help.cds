@@ -60,6 +60,8 @@ annotate schema.OrderItem with {
                  ]
     };
      
+
+     
     currencyCode @Common.ValueList: {
     CollectionPath : 'Currencies',
     Label : '',
@@ -77,10 +79,10 @@ annotate schema.OrderItem with {
 annotate schema.OrderTemplateItem with {
 
     to_Product @Common.ValueList: {
-        CollectionPath: 'Product',
-        Label: '',
+        CollectionPath: 'Products',
+        Label: 'Product ID',
         Parameters : [
-            {
+             {
                 $Type: 'Common.ValueListParameterInOut',
                 LocalDataProperty : to_Product_productID,
                 ValueListProperty: 'productID' 
@@ -96,7 +98,11 @@ annotate schema.OrderTemplateItem with {
             } ,
             {
                 $Type: 'Common.ValueListParameterDisplayOnly',
-                ValueListProperty: 'description' 
+                ValueListProperty: 'productCategory' 
+            } ,
+            {
+                $Type: 'Common.ValueListParameterDisplayOnly',
+                ValueListProperty: 'stockQuantity' 
             }
                  ]
     };

@@ -1,0 +1,42 @@
+{
+  "xsappname": "dealerapp",
+  "tenant-mode": "dedicated",
+  "description": "Security profile of called application",
+  "scopes": [
+    {
+      "name": "uaa.user",
+      "description": "UAA"
+    },
+    {
+      "name": "$XSAPPNAME.dealeradmin",
+      "description": "dealeradmin"
+    }
+  ],
+  "role-templates": [
+    {
+      "name": "Token_Exchange",
+      "description": "UAA",
+      "scope-references": [
+        "uaa.user"
+      ]
+    },
+    {
+      "name": "dealeradmin",
+      "description": "generated",
+      "scope-references": [
+        "$XSAPPNAME.dealeradmin"
+      ]
+    }
+  ],
+  "attributes": [],
+
+  "oauth2-configuration": {
+    "token-validity": 900, 
+    "redirect-uris": [
+      "https://*.us10-001.hana.ondemand.com/**",
+      "https://*.cfapps.us10-001.hana.ondemand.com/**",
+      "https://*.applicationstudio.cloud.sap/**"
+    ],
+    "credential-types": ["binding-secret","x509"]
+  }
+}

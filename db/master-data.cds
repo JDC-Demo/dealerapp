@@ -6,11 +6,11 @@ using { Currency, Country, custom.managed,  sap } from '../db/common';
 aspect MasterData {}
  
 entity Product : MasterData ,managed{
-  key productID: Integer @readonly @Core.Computed;
+  key productID: String; // @readonly @Core.Computed;
   productName: String;
   productDescription: String;
   price: Decimal(10, 2); 
-  currencyCode   : Currency;
+  currencyCode   : Currency default 'USD';
   category: String; 
   image: String  @UI : {IsImageURL : true};// This can store a reference to the image location
     // Additional fields
@@ -25,7 +25,7 @@ entity Product : MasterData ,managed{
 }
 
 entity Customer :  MasterData {
-  key customerID : Integer @readonly @Core.Computed;
+  key customerID : Integer; // @readonly @Core.Computed;
   firstName      : String(40);
   lastName       : String(40);
   title          : String(10);
@@ -37,4 +37,12 @@ entity Customer :  MasterData {
   eMailAddress   : String(256);
   companyName    : String(40);
   companyAddress : String(60);
+ // @virtual
+ //  salesData : SalesData;
 };
+/*
+
+type SalesData : {
+  currentyear_sales : Integer default 100000;
+  lastyear_sales : Integer default 90000;
+};*/

@@ -1,0 +1,204 @@
+_schema-version: "3.1"
+ID: dealerapp
+description: A simple CAP project.
+version: 1.0.0
+modules:
+- name: dealerapp-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: yahama-hdi
+  - name: uaa_dealerapp
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+  build-parameters:
+    builder: npm
+- name: dealerapp-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: yahama-hdi
+  parameters:
+    buildpack: nodejs_buildpack
+- name: dealerapp-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: dealerapp-destination-service
+    parameters:
+      content-target: true
+  - name: dealerapp_html_repo_host
+    parameters:
+      service-key:
+        name: dealerapp_html_repo_host-key
+  - name: uaa_dealerapp
+    parameters:
+      service-key:
+        name: uaa_dealerapp-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: managedapprouter_dealerapp_html_repo_host
+          ServiceInstanceName: dealerapp-html5-app-host-service
+          ServiceKeyName: dealerapp_html_repo_host-key
+          sap.cloud.service: managedapprouter
+        - Authentication: OAuth2UserTokenExchange
+          Name: managedapprouter_uaa_dealerapp
+          ServiceInstanceName: dealerapp-xsuaa-service
+          ServiceKeyName: uaa_dealerapp-key
+          sap.cloud.service: managedapprouter
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: dealerapp-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: dealerapp_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - orders.zip
+      name: orders
+      target-path: resources/
+    - artifacts:
+      - admintemplate.zip
+      name: admintemplate
+      target-path: resources/
+    - artifacts:
+      - dealer.zip
+      name: dealer
+      target-path: resources/
+    - artifacts:
+      - adminproduct.zip
+      name: adminproduct
+      target-path: resources/
+    - artifacts:
+      - dealertemplate.zip
+      name: dealertemplate
+      target-path: resources/
+    - artifacts:
+      - productcatalogue.zip
+      name: productcatalogue
+      target-path: resources/
+- name: orders
+  type: html5
+  path: app/orders
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: admintemplate
+  type: html5
+  path: app/admin-template
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: dealer
+  type: html5
+  path: app/dealer
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: adminproduct
+  type: html5
+  path: app/admin-product
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: dealertemplate
+  type: html5
+  path: app/dealer-template
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: productcatalogue
+  type: html5
+  path: app/productcatalogue
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: yahama-hdi
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: dealerapp-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          - Authentication: NoAuthentication
+            HTML5.DynamicDestination: true
+            HTML5.ForwardAuthToken: true
+            Name: dealerapp-srv-api
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{srv-api/srv-url}
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: dealerapp-destination-service
+    service-plan: lite
+  requires:
+  - name: srv-api
+- name: dealerapp_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: dealerapp-html5-app-host-service
+    service-plan: app-host
+- name: uaa_dealerapp
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: dealerapp-xsuaa-service
+    service-plan: application
+parameters:
+  deploy_mode: html5-repo
+  enable-parallel-deployments: true
+build-parameters:
+  before-all:
+  - builder: custom
+    commands:
+    - npx cds build --production

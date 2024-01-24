@@ -1,77 +1,80 @@
 {
-  "name": "dealerapp",
-  "version": "1.0.0",
-  "description": "A simple CAP project.",
-  "repository": "<Add your repository here>",
-  "license": "UNLICENSED",
-  "private": true,
-  "dependencies": {
-    "@sap-cloud-sdk/resilience": "^3.10.0",
-    "@sap/cds": "^7",
-    "express": "^4",
-    "sqlite": "^5.1.1"
-  },
-  "devDependencies": {
-    "@cap-js/sqlite": "^1",
-    "@sap/ux-specification": "^1.120.1"
-  },
-  "cds": {
-    "requires": {
-      "[development]": {
-        "auth": {
-          "kind": "mocked-auth",
-          "users": {
-            "rose": {
-              "roles": []
+    "name": "dealerapp",
+    "version": "1.0.0",
+    "description": "A simple CAP project.",
+    "repository": "<Add your repository here>",
+    "license": "UNLICENSED",
+    "private": true,
+    "dependencies": {
+        "@sap-cloud-sdk/resilience": "^3.10.0",
+        "@sap/cds": "^7",
+        "@sap/cds-hana": "^2",
+        "@sap/xssec": "^3.6.1",
+        "express": "^4",
+        "passport": "^0.7.0",
+        "sqlite": "^5.1.1"
+    },
+    "devDependencies": {
+        "@cap-js/sqlite": "^1",
+        "@sap/cds-dk": "^7",
+        "@sap/hdi-deploy": "4.9.2",
+        "@sap/ux-specification": "^1.120.1",
+        "rimraf": "^3.0.2"
+    },
+    "cds": {
+        "requires": {
+            "[development]": {
+                "auth": {
+                    "kind": "mocked-auth",
+                    "users": {
+                        "rose": {
+                            "roles": []
+                        },
+                        "martha": {
+                            "roles": [
+                                "reviewer"
+                            ]
+                        },
+                        "amy": {
+                            "roles": [
+                                "processor"
+                            ]
+                        },
+                        "admin": {
+                            "password": "admin",
+                            "roles": [
+                                "admin"
+                            ]
+                        }
+                    }
+                }
             },
-            "martha": {
-              "roles": [
-                "reviewer"
-              ]
-            },
-            "amy": {
-              "roles": [
-                "processor"
-              ]
-            },
-            "admin": {
-              "password": "admin",
-              "roles": [
-                "admin"
-              ]
+            "[production]": {
+                "db": "hana",
+                "auth": {
+                    "kind": "xsuaa"
+                }
             }
-          }
         }
-      },
-      "OP_API_SALES_ORDER_SRV_0001": {
-        "kind": "odata-v2",
-        "model": "srv/external/OP_API_SALES_ORDER_SRV_0001"
-      }
-    }
-  },
-  "scripts": {
-    "start": "cds-serve",
-    "watch-dearlerapp": "cds watch --open dearlerapp/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-admin-dealer": "cds watch --open admin-dealer/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-admin-product": "cds watch --open admin-product/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-admin-templateorder": "cds watch --open admin-templateorder/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-dealerorder": "cds watch --open dealerorder/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-admin-dealers": "cds watch --open admin-dealers/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-admin-products": "cds watch --open admin-products/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-admin-ordertemplates": "cds watch --open admin-ordertemplates/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-ordertemplates": "cds watch --open ordertemplates/webapp/index.html?sap-ui-xx-viewCache=false",
-    "watch-products": "cds watch --open products/webapp/index.html?sap-ui-xx-viewCache=false"
-  },
-  "sapux": [
-    "app/dearlerapp",
-    "app/admin-dealer",
-    "app/admin-product",
-    "app/admin-templateorder",
-    "app/dealerorder",
-    "app/admin-dealers",
-    "app/admin-products",
-    "app/admin-ordertemplates",
-    "app/ordertemplates",
-    "app/products"
-  ]
+    },
+    "scripts": {
+        "start": "cds-serve",
+        "undeploy": "cf undeploy dealerapp --delete-services --delete-service-keys --delete-service-brokers",
+        "build": "rimraf resources mta_archives && mbt build --mtar archive",
+        "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+        "watch-orders": "cds watch --open orders/webapp/index.html?sap-ui-xx-viewCache=false",
+        "watch-admin-template": "cds watch --open admin-template/webapp/index.html?sap-ui-xx-viewCache=false",
+        "watch-dealer": "cds watch --open dealer/webapp/index.html?sap-ui-xx-viewCache=false",
+        "watch-admin-product": "cds watch --open admin-product/webapp/index.html?sap-ui-xx-viewCache=false",
+        "watch-dealer-template": "cds watch --open dealer-template/webapp/index.html?sap-ui-xx-viewCache=false",
+        "watch-productcatalogue": "cds watch --open productcatalogue/webapp/index.html?sap-ui-xx-viewCache=false"
+    },
+    "sapux": [
+        "app/orders",
+        "app/admin-template",
+        "app/dealer",
+        "app/admin-product",
+        "app/dealer-template",
+        "app/productcatalogue"
+    ]
 }

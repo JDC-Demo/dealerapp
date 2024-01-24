@@ -20,6 +20,11 @@ File or Folder | Purpose
 - Start adding content, for example, a [db/schema.cds](db/schema.cds).
 
 
+## Specifics about this branch
+
+In here, the application is in ready state to be deployed with DB to HANA, APIs with dedicated router app to Cloud foundry. The UIs are only served locally via index.html that is identical to local flp page.
+
+
 
 
 

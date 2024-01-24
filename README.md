@@ -20,6 +20,10 @@ File or Folder | Purpose
 - Start adding content, for example, a [db/schema.cds](db/schema.cds).
 
 
+## Specifics about this branch
+
+In here, the application is in ready state to be deployed with DB to HANA, APIs and UIs bundled into one mta protected by managed router
+
 
 
 

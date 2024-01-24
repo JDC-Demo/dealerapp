@@ -397,7 +397,7 @@ class OrderService extends cds.ApplicationService {
                 newpurchaseOrder = {
                     orderUUID: cds.utils.uuid(),
                     orderID: orderID,
-                    to_Customer_customerID: 28,
+                    to_Customer_customerID: CUSTOMER,
                     currencyCode_code: 'USD',
                     orderStatus_code: 'O',
                     orderDate: (new Date).toISOString().slice(0, 10)

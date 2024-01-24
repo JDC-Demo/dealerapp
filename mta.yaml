@@ -68,9 +68,79 @@ modules:
       - orders.zip
       name: orders
       target-path: resources/
+    - artifacts:
+      - admintemplate.zip
+      name: admintemplate
+      target-path: resources/
+    - artifacts:
+      - dealer.zip
+      name: dealer
+      target-path: resources/
+    - artifacts:
+      - adminproduct.zip
+      name: adminproduct
+      target-path: resources/
+    - artifacts:
+      - dealertemplate.zip
+      name: dealertemplate
+      target-path: resources/
+    - artifacts:
+      - productcatalogue.zip
+      name: productcatalogue
+      target-path: resources/
 - name: orders
   type: html5
   path: app/orders
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: admintemplate
+  type: html5
+  path: app/admin-template
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: dealer
+  type: html5
+  path: app/dealer
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: adminproduct
+  type: html5
+  path: app/admin-product
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: dealertemplate
+  type: html5
+  path: app/dealer-template
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+- name: productcatalogue
+  type: html5
+  path: app/productcatalogue
   build-parameters:
     build-result: dist
     builder: custom

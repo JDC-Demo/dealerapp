@@ -1,71 +1,134 @@
-_schema-version: '3.1'
+_schema-version: "3.1"
 ID: dealerapp
+description: A simple CAP project.
 version: 1.0.0
-description: "A simple CAP project."
+modules:
+- name: dealerapp-srv
+  type: nodejs
+  path: gen/srv
+  requires:
+  - name: yahama-hdi
+  - name: uaa_dealerapp
+  provides:
+  - name: srv-api
+    properties:
+      srv-url: ${default-url}
+  parameters:
+    buildpack: nodejs_buildpack
+  build-parameters:
+    builder: npm
+- name: dealerapp-db-deployer
+  type: hdb
+  path: gen/db
+  requires:
+  - name: yahama-hdi
+  parameters:
+    buildpack: nodejs_buildpack
+- name: dealerapp-destination-content
+  type: com.sap.application.content
+  requires:
+  - name: dealerapp-destination-service
+    parameters:
+      content-target: true
+  - name: dealerapp_html_repo_host
+    parameters:
+      service-key:
+        name: dealerapp_html_repo_host-key
+  - name: uaa_dealerapp
+    parameters:
+      service-key:
+        name: uaa_dealerapp-key
+  parameters:
+    content:
+      instance:
+        destinations:
+        - Name: managedapprouter_dealerapp_html_repo_host
+          ServiceInstanceName: dealerapp-html5-app-host-service
+          ServiceKeyName: dealerapp_html_repo_host-key
+          sap.cloud.service: managedapprouter
+        - Authentication: OAuth2UserTokenExchange
+          Name: managedapprouter_uaa_dealerapp
+          ServiceInstanceName: dealerapp-xsuaa-service
+          ServiceKeyName: uaa_dealerapp-key
+          sap.cloud.service: managedapprouter
+        existing_destinations_policy: ignore
+  build-parameters:
+    no-source: true
+- name: dealerapp-app-content
+  type: com.sap.application.content
+  path: .
+  requires:
+  - name: dealerapp_html_repo_host
+    parameters:
+      content-target: true
+  build-parameters:
+    build-result: resources
+    requires:
+    - artifacts:
+      - order.zip
+      name: order
+      target-path: resources/
+- name: order
+  type: html5
+  path: app/order
+  build-parameters:
+    build-result: dist
+    builder: custom
+    commands:
+    - npm install
+    - npm run build:cf
+    supported-platforms: []
+resources:
+- name: yahama-hdi
+  type: com.sap.xs.hdi-container
+  parameters:
+    service: hana
+    service-plan: hdi-shared
+- name: dealerapp-destination-service
+  type: org.cloudfoundry.managed-service
+  parameters:
+    config:
+      HTML5Runtime_enabled: true
+      init_data:
+        instance:
+          destinations:
+          - Authentication: NoAuthentication
+            Name: ui5
+            ProxyType: Internet
+            Type: HTTP
+            URL: https://ui5.sap.com
+          - Authentication: NoAuthentication
+            HTML5.DynamicDestination: true
+            HTML5.ForwardAuthToken: true
+            Name: dealerapp-srv-api
+            ProxyType: Internet
+            Type: HTTP
+            URL: ~{srv-api/srv-url}
+          existing_destinations_policy: update
+      version: 1.0.0
+    service: destination
+    service-name: dealerapp-destination-service
+    service-plan: lite
+  requires:
+  - name: srv-api
+- name: dealerapp_html_repo_host
+  type: org.cloudfoundry.managed-service
+  parameters:
+    service: html5-apps-repo
+    service-name: dealerapp-html5-app-host-service
+    service-plan: app-host
+- name: uaa_dealerapp
+  type: org.cloudfoundry.managed-service
+  parameters:
+    path: ./xs-security.json
+    service: xsuaa
+    service-name: dealerapp-xsuaa-service
+    service-plan: application
 parameters:
+  deploy_mode: html5-repo
   enable-parallel-deployments: true
 build-parameters:
   before-all:
-    - builder: custom
-      commands:
-        - npx cds build --production
-
-modules:
-  - name: dealerapp-srv
-    type: nodejs
-    path: gen/srv
-    parameters:
-      buildpack: nodejs_buildpack
-    build-parameters:
-      builder: npm
-    provides:
-      - name: srv-api # required by consumers of CAP services (e.g. approuter)
-        properties:
-          srv-url: ${default-url}
-    requires:
-      - name: dealerapp-auth
-      - name: yamaha-hdi
-
-  - name: dealerapp
-    type: approuter.nodejs
-    path: app/
-    parameters:
-      keep-existing-routes: true
-      disk-quota: 256M
-      memory: 256M
-    requires:
-      - name: srv-api
-        group: destinations
-        properties:
-          name: srv-api # must be used in xs-app.json as well
-          url: ~{srv-url}
-          forwardAuthToken: true
-      - name: dealerapp-auth
-    build-parameters:
-      ignore:
-        - 'node_modules/**'
-
-  - name: dealerapp-db-deployer
-    type: hdb
-    path: gen/db
-    parameters:
-      buildpack: nodejs_buildpack
-    requires:
-      - name: yamaha-hdi
-
-resources:
-  - name: dealerapp-auth
-    type: org.cloudfoundry.managed-service
-    parameters:
-      service: xsuaa
-      service-plan: application
-      path: ./xs-security.json
-      config:
-        xsappname: dealerapp-${org}-${space}
-        tenant-mode: dedicated
-
-  - name: yamaha-hdi
-    type: com.sap.xs.hdi-container
-    parameters:
-      service: hana
-      service-plan: hdi-shared
+  - builder: custom
+    commands:
+    - npx cds build --production

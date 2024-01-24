@@ -1,23 +1,24 @@
 {
-  "xsappname": "dealerapp",
+  "xsappname": "yamahaapp",
   "tenant-mode": "dedicated",
+  "description": "Security profile of called application",
   "scopes": [
     {
       "name": "$XSAPPNAME.dealeradmin",
       "description": "dealeradmin"
     }
   ],
-  "attributes": [],
   "role-templates": [
     {
       "name": "dealeradmin",
       "description": "generated",
       "scope-references": [
         "$XSAPPNAME.dealeradmin"
-      ],
-      "attribute-references": []
+      ]
     }
   ],
+  "attributes": [],
+
   "oauth2-configuration": {
     "token-validity": 900, 
     "redirect-uris": [

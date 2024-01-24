@@ -50,7 +50,10 @@
                 }
             },
             "[production]": {
-                "db": "hana"
+                "db": "hana",
+                "auth": {
+                    "kind": "xsuaa"
+                }
             }
         }
     },
@@ -59,9 +62,10 @@
         "undeploy": "cf undeploy dealerapp --delete-services --delete-service-keys --delete-service-brokers",
         "build": "rimraf resources mta_archives && mbt build --mtar archive",
         "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
-        "watch-order": "cds watch --open order/webapp/index.html?sap-ui-xx-viewCache=false"
+        "watch-order": "cds watch --open order/webapp/index.html?sap-ui-xx-viewCache=false",
+        "watch-orders": "cds watch --open orders/webapp/index.html?sap-ui-xx-viewCache=false"
     },
     "sapux": [
-        "app/order"
+        "app/orders"
     ]
 }

@@ -8,7 +8,7 @@ sap.ui.define(['sap/fe/test/ObjectPage'], function(ObjectPage) {
 
     return new ObjectPage(
         {
-            appId: 'order',
+            appId: 'orders',
             componentId: 'OrderItemsObjectPage',
             contextPath: '/Orders/to_Items'
         },

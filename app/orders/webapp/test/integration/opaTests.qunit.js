@@ -1,16 +1,16 @@
 sap.ui.require(
     [
         'sap/fe/test/JourneyRunner',
-        'order/test/integration/FirstJourney',
-		'order/test/integration/pages/OrdersList',
-		'order/test/integration/pages/OrdersObjectPage',
-		'order/test/integration/pages/OrderItemsObjectPage'
+        'orders/test/integration/FirstJourney',
+		'orders/test/integration/pages/OrdersList',
+		'orders/test/integration/pages/OrdersObjectPage',
+		'orders/test/integration/pages/OrderItemsObjectPage'
     ],
     function(JourneyRunner, opaJourney, OrdersList, OrdersObjectPage, OrderItemsObjectPage) {
         'use strict';
         var JourneyRunner = new JourneyRunner({
             // start index.html in web folder
-            launchUrl: sap.ui.require.toUrl('order') + '/index.html'
+            launchUrl: sap.ui.require.toUrl('orders') + '/index.html'
         });
 
        

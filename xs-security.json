@@ -1,14 +1,25 @@
 {
-  "xsappname": "yamahaapp",
+  "xsappname": "dealerapp",
   "tenant-mode": "dedicated",
   "description": "Security profile of called application",
   "scopes": [
+    {
+      "name": "uaa.user",
+      "description": "UAA"
+    },
     {
       "name": "$XSAPPNAME.dealeradmin",
       "description": "dealeradmin"
     }
   ],
   "role-templates": [
+    {
+      "name": "Token_Exchange",
+      "description": "UAA",
+      "scope-references": [
+        "uaa.user"
+      ]
+    },
     {
       "name": "dealeradmin",
       "description": "generated",

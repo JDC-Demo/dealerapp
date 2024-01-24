@@ -1,4 +1,4 @@
 specVersion: "2.5"
 metadata:
-  name: order
+  name: orders
 type: application

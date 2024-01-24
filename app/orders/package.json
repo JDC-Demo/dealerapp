@@ -1,7 +1,7 @@
 {
-    "name": "order",
+    "name": "orders",
     "version": "0.0.1",
-    "description": "Manage Order",
+    "description": "Manage Orders",
     "keywords": [
         "ui5",
         "openui5",

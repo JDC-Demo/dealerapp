@@ -65,12 +65,12 @@ modules:
     build-result: resources
     requires:
     - artifacts:
-      - order.zip
-      name: order
+      - orders.zip
+      name: orders
       target-path: resources/
-- name: order
+- name: orders
   type: html5
-  path: app/order
+  path: app/orders
   build-parameters:
     build-result: dist
     builder: custom

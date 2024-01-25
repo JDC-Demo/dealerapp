@@ -258,10 +258,47 @@ class OrderService extends cds.ApplicationService {
 
         // update to order
         this.after('UPDATE', 'Orders', async (_, req) => {
+          // console.log(req.data);
+           const { orderUUID }  = req.data;
             console.log('OrderService: after update  handler >> Orders');
             const { orderStatus } = await SELECT.one`orderStatus`.from(Orders).where({ orderUUID: req.data.orderUUID })
             if (orderStatus === 'C' || orderStatus === 'A') req.reject(403, 'Order cannot be updated')
 
+    
+                // Attempt to use to_Product_productID
+ 
+
+                const cat1 = ['B7B-14611-00-00','BB5-E4611-01-00','BD3-E4611-00-00'];
+                const cat2 = ['BHR-24110-00-00','BD3-F4110-10-00','BB5-F4110-01-00'];
+                const cat3 = ['GYT-5PA35-10-AL'];
+                
+                const suggestedItems = [] ;
+                    const tx = cds.transaction(req);
+                    const orderItems = await tx.run( SELECT.from(OrderItems).where({ to_Order_orderUUID: orderUUID }));
+                    const productIDs = orderItems.map(item => item.to_Product_productID);
+                    console.log(productIDs);
+   
+                    let commonProductIds = productIDs.filter(productId => cat1.includes(productId) || cat2.includes(productId));
+
+                    commonProductIds.forEach(productId => {
+                        console.log(productId)
+                        if (cat1.includes(productId)) {
+                   //     suggestedItems.push('EXHAUST PIPE ASSY 1(2BS-14610-00-00), EXHAUST PIPE ASSY(1TP-14610-10-00)');
+                        suggestedItems.push('EXHAUST PIPE ASSY 1');
+                        } 
+                        else if (cat2.includes(productId)) {
+                            //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');
+                            suggestedItems.push('FUEL TANK COMP. - PGD');
+                        }
+                        else if (cat3.includes(productId)) {
+                            //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');
+                            suggestedItems.push('GYTR Clutch Pressure Plate');
+                        }
+                    });
+                    let string = suggestedItems.join('\n');
+                     req.info(`Order saved. Here are few sugegstions : ${string} `); 
+
+ 
         })
 
         /**

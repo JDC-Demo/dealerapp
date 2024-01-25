@@ -289,19 +289,23 @@ class OrderService extends cds.ApplicationService {
                         console.log(productId)
                         if (cat1.includes(productId)) {
                    //     suggestedItems.push('EXHAUST PIPE ASSY 1(2BS-14610-00-00), EXHAUST PIPE ASSY(1TP-14610-10-00)');
-                        suggestedItems.push('EXHAUST PIPE ASSY 1');
+                            if(!productIDs.includes('2BS-14610-00-00'))
+                            suggestedItems.push('EXHAUST PIPE ASSY 1');
                         } 
                         else if (cat2.includes(productId)) {
+
+                            if(!productIDs.includes('BP6-Y2410-01-X8'))
                             //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');
                             suggestedItems.push('FUEL TANK COMP. - PGD');
                         }
                         else if (cat3.includes(productId)) {
                             //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');
+                            if(!productIDs.includes('GYT-5PA56-20-00'))
                             suggestedItems.push('GYTR Clutch Pressure Plate');
                         }
                     });
                     let string = suggestedItems.join('\n');
-                     req.info(`Order saved. \n Here are few suggestions to add : \n ${string} `); 
+                     req.info(`Order saved. \n Suggested product(s) to add : \n ${string} `); 
 
  
         })

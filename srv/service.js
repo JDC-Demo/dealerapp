@@ -249,8 +249,13 @@ class OrderService extends cds.ApplicationService {
             }
            else    
             { 
+                try {
                const {to_Order_orderUUID} = await SELECT.one().from(OrderItems).where({ itemUUID: req.data.itemUUID }); 
               return await cds.run(UPDATE(Orders).set({  totalAmount:0.00, tax: 0.00, totalAmount: 0.00, discount: 0.00 }).where({ orderUUID : to_Order_orderUUID}))
+            }
+            catch(err) {
+                    console.log('to_Order_orderUUID not defined ' );
+            }
             } 
         });
 
@@ -278,7 +283,7 @@ class OrderService extends cds.ApplicationService {
                     const productIDs = orderItems.map(item => item.to_Product_productID);
                     console.log(productIDs);
    
-                    let commonProductIds = productIDs.filter(productId => cat1.includes(productId) || cat2.includes(productId));
+                    let commonProductIds = productIDs.filter(productId => cat1.includes(productId) || cat2.includes(productId) || cat3.includes(productId));
 
                     commonProductIds.forEach(productId => {
                         console.log(productId)
@@ -296,7 +301,7 @@ class OrderService extends cds.ApplicationService {
                         }
                     });
                     let string = suggestedItems.join('\n');
-                     req.info(`Order saved. Here are few sugegstions : ${string} `); 
+                     req.info(`Order saved. \n Here are few suggestions to add : \n ${string} `); 
 
  
         })

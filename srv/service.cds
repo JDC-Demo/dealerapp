@@ -25,6 +25,7 @@ type inText : {
   entity Orders as projection on orderschema.Order actions { 
     action createOrderByTemplate ();// returns Orders;
     action confirmOrder();  //(text:inText:comment);
+    action autoSuggestion();  //(text:inText:comment);
   };
 
    entity OrderItems as projection on orderschema.OrderItem;

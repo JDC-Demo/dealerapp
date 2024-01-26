@@ -338,7 +338,7 @@ class OrderService extends cds.ApplicationService {
                 req.reject(403, 'Order cannot be updated if its approved or cancelled');
 
             const newItems = await this._addSuggestedOrderLineItem(orderUUID, req, srv)
-            const newItem
+            const newItemsDraft = await this._addSuggestedOrderLineItemFromDraft(orderUUID, req, srv)
             
             let items = 0;
 

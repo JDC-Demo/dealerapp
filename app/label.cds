@@ -40,6 +40,7 @@ annotate schema.OrderItem with @title: '{i18n>OrderItem}' {
   to_Order @UI.Hidden;
   to_Product @title: '{i18n>ProductID}' @Common.Text: to_Product.productName;
   quantity @title: '{i18n>Quantity}';
+  autoSuggested @title : '{i18n>AISuggested}' @UI.DataField: { Value: autoSuggested, Criticality: #BOOLEAN };
   unitPrice @title: '{i18n>UnitPrice}' @Measures.ISOCurrency: currencyCode_code;
   netPrice @title: '{i18n>NetPrice}'  @Measures.ISOCurrency: currencyCode_code;
   currencyCode @title: '{i18n>CurrencyCode}';

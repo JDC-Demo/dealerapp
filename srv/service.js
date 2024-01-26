@@ -273,17 +273,13 @@ class OrderService extends cds.ApplicationService {
             console.log('OrderService: after update  handler >> Orders');
             const { orderStatus } = await SELECT.one`orderStatus`.from(Orders).where({ orderUUID: req.data.orderUUID })
             if (orderStatus === 'C' || orderStatus === 'A') req.reject(403, 'Order cannot be updated')
-
-    
-                // Attempt to use to_Product_productID
-
-                
-                const suggestedItems = [] ;
+       /*
+                let  suggestedItems = [] ;
                     const tx = cds.transaction(req);
                     const orderItems = await tx.run( SELECT.from(OrderItems).where({ to_Order_orderUUID: orderUUID }));
                     const productIDs = orderItems.map(item => item.to_Product_productID);
                     console.log(productIDs);
-   
+  
                     let commonProductIds = productIDs.filter(productId => cat1.includes(productId) || cat2.includes(productId) || cat3.includes(productId));
 
                     commonProductIds.forEach(productId => {
@@ -305,8 +301,14 @@ class OrderService extends cds.ApplicationService {
                             suggestedItems.push('GYTR Clutch Pressure Plate');
                         }
                     });
-                    let string = suggestedItems.join('\n');
-                     req.info(`Order saved. \n Suggested product(s) to add : \n ${string} `); 
+                   if (suggestedItems.length > 0 )
+                    {
+                        console.log( suggestedItems.length ) ;
+                        console.log('inside loop');
+                        req.info(`Order saved. \n Suggested product(s) to add : \n ${ suggestedItems.join('\n')} `); 
+                    } */
+                  //  let string = suggestedItems.join('\n');
+                     
 
  
         })
@@ -326,26 +328,38 @@ class OrderService extends cds.ApplicationService {
         this.on('autoSuggestion', async (req) => {
             console.log('OrderService: autoSuggestion handler'); 
             const srv = await cds.connect.to('OrderService')
+
+         //   const draft = await cds.connect.to('Draft')
             console.log(req.params);
             const { orderUUID } = req.params[0];
             // retrieve the order status from order
             const { orderStatus_code } = await srv.tx(req).run(SELECT.one`orderStatus_code`.from(Orders).where({ orderUUID: orderUUID }))
             if (orderStatus_code === 'C' || orderStatus_code === 'A') 
-           //     return req.info('Order cannot be updated if its approved or cancelled');
                 req.reject(403, 'Order cannot be updated if its approved or cancelled');
 
             const newItems = await this._addSuggestedOrderLineItem(orderUUID, req, srv)
-
-            console.log(newItems);
-
-            if(newItems.length > 0) {
+            const newItemsDraft = await this._addSuggestedOrderLineItemFromDraft(orderUUID, req, srv)
+        
+            if(newItems.length > 0  || newItemsDraft.length > 0) {
                 for (let i = 0; i < newItems.length; i++) {
+                    console.log(newItems[i]);
                     await srv.tx(req).run(INSERT.into('OrderItems').entries(newItems[i]));
                 }
-            req.info(`Added ${ newItems.length }  items to the order`); 
+          
+                for (let i = 0; i < newItemsDraft.length; i++) {
+
+                    let record = {...newItemsDraft[i], DraftAdministrativeData_DraftUUID : cds.utils.uuid()};
+                    console.log(record);
+
+                    await srv.tx(req).run(INSERT.into('OrderItems.Drafts').entries(record));
+                }
+                    
+                let mergedItems = [...newItems, ...newItemsDraft];
+
+            req.info(`${ mergedItems.length } AI recommendation(s) added to the order`); 
             }
             else  
-            req.info(`No items for recommendation at the moment`); 
+            req.info(`No products for AI recommendation at the moment`); 
         });
 
         this._addSuggestedOrderLineItem = async function (orderUUID, req, srv) {
@@ -354,7 +368,7 @@ class OrderService extends cds.ApplicationService {
             const orderItems = await tx.run( SELECT.from(OrderItems).where({ to_Order_orderUUID: orderUUID }));
             const itemIDs = orderItems.map(item => item.itemID);
             const productIDs = orderItems.map(item => item.to_Product_productID);
-            const base = {  to_Order_orderUUID:orderUUID, to_Customer_customerID : CUSTOMER, quantity : parseInt(1)};
+            const base = {  to_Order_orderUUID:orderUUID, quantity : parseInt(1), autoSuggested : true};
             
             let suggestedItems = [] ;
             let maxItemID = Math.max(...itemIDs);
@@ -368,23 +382,67 @@ class OrderService extends cds.ApplicationService {
                 {
                    //     suggestedItems.push('EXHAUST PIPE ASSY 1(2BS-14610-00-00), EXHAUST PIPE ASSY(1TP-14610-10-00)');
                     maxItemID++;
-                    suggestedItems.push({ ...base, itemID : parseInt(maxItemID), to_Product_productID : '2BS-14610-00-00' }); //EXHAUST PIPE ASSY 1
+                    suggestedItems.push({ ...base, itemUUID: cds.utils.uuid(),itemID : parseInt(maxItemID), to_Product_productID : '2BS-14610-00-00' }); //EXHAUST PIPE ASSY 1
                 } 
 
                 else if ((cat2.includes(productId)) && (!productIDs.includes('BP6-Y2410-01-X8')) )
                 {
                     maxItemID++;
-                    suggestedItems.push({ ...base, itemID : parseInt(maxItemID),to_Product_productID : 'BP6-Y2410-01-X8'}); //FUEL TANK COMP. - PGD
+                    suggestedItems.push({ ...base,  itemUUID: cds.utils.uuid(),itemID : parseInt(maxItemID),to_Product_productID : 'BP6-Y2410-01-X8'}); //FUEL TANK COMP. - PGD
                 }
                     //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');                
                 else if ((cat3.includes(productId)) && (!productIDs.includes('GYT-5PA56-20-00')) )
                 {
                     //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');
                     maxItemID++;
-                    suggestedItems.push({  ...base, itemID : parseInt(maxItemID),to_Product_productID : 'GYT-5PA56-20-00'}); //GYTR Clutch Pressure Plate
+                    suggestedItems.push({  ...base,  itemUUID: cds.utils.uuid(), itemID : parseInt(maxItemID),to_Product_productID : 'GYT-5PA56-20-00'}); //GYTR Clutch Pressure Plate
                 }
             })
+            console.log('from new records /n ' , suggestedItems)
+            return suggestedItems;
+        } 
 
+
+        this._addSuggestedOrderLineItemFromDraft = async function (orderUUID, req, srv) {
+            
+            const tx = cds.transaction(req);
+            const orderItems = await tx.run( SELECT.from(OrderItems.drafts).where({ to_Order_orderUUID: orderUUID }));
+            const itemIDs = orderItems.map(item => item.itemID);
+            const productIDs = orderItems.map(item => item.to_Product_productID);
+            const base = {  to_Order_orderUUID:orderUUID, quantity : parseInt(1), autoSuggested : true,  IsActiveEntity: false,
+                HasActiveEntity: false,
+                HasDraftEntity: false
+            };
+            
+            let suggestedItems = [] ;
+            let maxItemID = Math.max(...itemIDs);
+            let commonProductIds = productIDs.filter(productId => cat1.includes(productId) || cat2.includes(productId) || cat3.includes(productId));
+            
+            //construct the data for new line items as per suggested  model
+            commonProductIds.forEach(productId => {
+                console.log(productId);
+                        
+                if ((cat1.includes(productId)) && (!productIDs.includes('2BS-14610-00-00')) ) 
+                {
+                   //     suggestedItems.push('EXHAUST PIPE ASSY 1(2BS-14610-00-00), EXHAUST PIPE ASSY(1TP-14610-10-00)');
+                    maxItemID++;
+                    suggestedItems.push({ ...base,  itemUUID: cds.utils.uuid(),  itemID : parseInt(maxItemID), to_Product_productID : '2BS-14610-00-00' }); //EXHAUST PIPE ASSY 1
+                } 
+
+                else if ((cat2.includes(productId)) && (!productIDs.includes('BP6-Y2410-01-X8')) )
+                {
+                    maxItemID++;
+                    suggestedItems.push({ ...base,  itemUUID: cds.utils.uuid(), itemID : parseInt(maxItemID),to_Product_productID : 'BP6-Y2410-01-X8'}); //FUEL TANK COMP. - PGD
+                }
+                    //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');                
+                else if ((cat3.includes(productId)) && (!productIDs.includes('GYT-5PA56-20-00')) )
+                {
+                    //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');
+                    maxItemID++;
+                    suggestedItems.push({  ...base, itemUUID: cds.utils.uuid(), itemID : parseInt(maxItemID),to_Product_productID : 'GYT-5PA56-20-00'}); //GYTR Clutch Pressure Plate
+                }
+            })
+            console.log(`from drafts /n` , suggestedItems)
             return suggestedItems;
         } 
 

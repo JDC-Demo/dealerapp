@@ -234,7 +234,7 @@ annotate OrderService.OrderItems  with @UI : {
       { Value : quantity, Label : 'Quantity' },
       { Value : to_Product.price, Label : 'Price' },
       { Value : netPrice, Label : 'Net Price' },
-      { Value : autoSuggested, Label : 'AI suggested'},
+      { Value : autoSuggested},
       { Value : to_Product.currencyCode_code, Label : 'Currency' },
       { Value : to_Product.productDescription, Label : 'Description' }
     ]

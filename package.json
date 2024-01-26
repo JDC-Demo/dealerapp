@@ -24,6 +24,7 @@
     "cds": {
         "requires": {
             "[development]": {
+                "db": "hana",
                 "auth": {
                     "kind": "mocked-auth",
                     "users": {

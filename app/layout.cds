@@ -107,8 +107,8 @@ annotate OrderService.Orders with @(
 annotate OrderService.Orders with @(
   UI.FieldGroup #GeneralInformation : {
     Data : [ 
+    { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.autoSuggestion',   Label  : '{i18n>AutoSuggestion}'   },
     { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.confirmOrder',   Label  : '{i18n>ConfirmOrder}'   },
- { $Type  : 'UI.DataFieldForAction', Action : 'OrderService.autoSuggestion',   Label  : '{i18n>AutoSuggestion}'   },
    //   { Value : orderID  },
       { Value : description},
       { Value : to_Customer_customerID },

@@ -1,0 +1,53 @@
+{
+  "requires": {
+    "[development]": {
+      "db": {
+        "binding": {
+          "type": "cf",
+          "apiEndpoint": "https://api.cf.us10-001.hana.ondemand.com",
+          "org": "554b5c5etrial",
+          "space": "dev",
+          "instance": "yahama-hdi",
+          "key": "yamaha-app-sk",
+          "resolved": false
+        },
+        "kind": "hana-cloud",
+        "vcap": {
+          "name": "db"
+        }
+      }
+    },
+    "[hybrid]": {
+      "db": {
+        "binding": {
+          "type": "cf",
+          "apiEndpoint": "https://api.cf.us10-001.hana.ondemand.com",
+          "org": "554b5c5etrial",
+          "space": "dev",
+          "instance": "yahama-hdi",
+          "key": "yamaha-app-sk",
+          "resolved": false
+        },
+        "kind": "hana-cloud",
+        "vcap": {
+          "name": "db"
+        }
+      },
+      "auth": {
+        "binding": {
+          "type": "cf",
+          "apiEndpoint": "https://api.cf.us10-001.hana.ondemand.com",
+          "org": "554b5c5etrial",
+          "space": "dev",
+          "instance": "dealerapp-xsuaa-service",
+          "key": "uaa_dealerapp-key",
+          "resolved": false
+        },
+        "kind": "xsuaa-auth",
+        "vcap": {
+          "name": "auth"
+        }
+      }
+    }
+  }
+}

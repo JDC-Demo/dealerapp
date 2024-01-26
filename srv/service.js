@@ -316,12 +316,10 @@ class OrderService extends cds.ApplicationService {
          */
         this.before('DELETE', 'Orders', async (req) => {
             console.log('OrderService: before delete handler >> Orders');
-          //  console.log(req.data)
-            const { orderStatus } = await SELECT.one`orderStatus`.from(Orders).where({ orderUUID: req.data.orderUUID })
-            if (orderStatus === 'C' || orderStatus === 'A') req.reject(403, 'Order cannot be updated')
-
-
-
+            const srv = await cds.connect.to('OrderService')
+            const { orderStatus_code } = await srv.tx(req).run(SELECT.one`orderStatus_code`.from(Orders).where({ orderUUID: req.data.orderUUID }))
+            if (orderStatus_code === 'C' || orderStatus_code === 'A') 
+                req.reject(403, 'Order cannot be deleted if its approved or cancelled');
         })
 
 
@@ -330,68 +328,65 @@ class OrderService extends cds.ApplicationService {
             const srv = await cds.connect.to('OrderService')
             console.log(req.params);
             const { orderUUID } = req.params[0];
+            // retrieve the order status from order
+            const { orderStatus_code } = await srv.tx(req).run(SELECT.one`orderStatus_code`.from(Orders).where({ orderUUID: orderUUID }))
+            if (orderStatus_code === 'C' || orderStatus_code === 'A') 
+           //     return req.info('Order cannot be updated if its approved or cancelled');
+                req.reject(403, 'Order cannot be updated if its approved or cancelled');
 
-            const suggestedItems = [] ;
-            const tx = cds.transaction(req);
-            const orderItems = await tx.run( SELECT.from(OrderItems).where({ to_Order_orderUUID: orderUUID }));
-                // find the max itemID in orderItems
-                            // Extract the itemID from each order item
-            const itemIDs = orderItems.map(item => item.itemID);
+            const newItems = await this._addSuggestedOrderLineItem(orderUUID, req, srv)
 
-                // Find the maximum itemID
-            const maxItemID = Math.max(...itemIDs);
+            console.log(newItems);
 
-            const productIDs = orderItems.map(item => item.to_Product_productID);
-            console.log(productIDs);
-
-            let commonProductIds = productIDs.filter(productId => cat1.includes(productId) || cat2.includes(productId) || cat3.includes(productId));
-
-            commonProductIds.forEach(productId => {
-                console.log(productId)
-                        if (cat1.includes(productId)) {
-                   //     suggestedItems.push('EXHAUST PIPE ASSY 1(2BS-14610-00-00), EXHAUST PIPE ASSY(1TP-14610-10-00)');
-                            if(!productIDs.includes('2BS-14610-00-00')) {
-                                maxItemID++;
-                                suggestedItems.push({ itemID : maxItemID, to_Order_orderUUID:orderUUID, to_Customer_customerID : CUSTOMER,to_Product_productID : '2BS-14610-00-00' , quantity : 1}); //EXHAUST PIPE ASSY 1
-                            }
-
-                        } 
-                else if (cat2.includes(productId)) {
-
-                    if(!productIDs.includes('BP6-Y2410-01-X8'))
-                    {
-                        maxItemID++;
-                        suggestedItems.push({ itemID : maxItemID, to_Order_orderUUID:orderUUID, to_Customer_customerID : CUSTOMER,to_Product_productID : 'BP6-Y2410-01-X8' , quantity : 1}); //FUEL TANK COMP. - PGD
-                    }
-    //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');                
+            if(newItems.length > 0) {
+                for (let i = 0; i < newItems.length; i++) {
+                    await srv.tx(req).run(INSERT.into('OrderItems').entries(newItems[i]));
                 }
-                else if (cat3.includes(productId)) {
-                    //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');
-                    if(!productIDs.includes('GYT-5PA56-20-00'))
-                    {
-                        maxItemID++;
-                        suggestedItems.push({ itemID : maxItemID, to_Order_orderUUID:orderUUID, to_Customer_customerID : CUSTOMER, to_Product_productID : 'GYT-5PA56-20-00', quantity : 1}); //GYTR Clutch Pressure Plate
-                    } 
-                }
-            });
-
-            if(suggestedItems) {
-                for (let i = 0; i < suggestedItems.length; i++) {
-                    await srv.tx(req).run(INSERT.into('OrderItems').entries(suggestedItems[i]));
-                }
-            req.info(`Added ${ suggestedItems.length }  items to the order`); 
+            req.info(`Added ${ newItems.length }  items to the order`); 
             }
             else  
             req.info(`No items for recommendation at the moment`); 
-            
-           
-          
-            //  const {orderID}= await  srv.tx(req).run(SELECT.one().from('Orders').where({ orderUUID: orderUUID }));
-          //  await cds.run(UPDATE(Orders).set({ orderStatus_code:'A'}).where({ orderUUID: orderUUID }));
-          //  req.info(`Order '${orderID}' successfully submitted for processing`);
         });
 
+        this._addSuggestedOrderLineItem = async function (orderUUID, req, srv) {
+            
+            const tx = cds.transaction(req);
+            const orderItems = await tx.run( SELECT.from(OrderItems).where({ to_Order_orderUUID: orderUUID }));
+            const itemIDs = orderItems.map(item => item.itemID);
+            const productIDs = orderItems.map(item => item.to_Product_productID);
+            const base = {  to_Order_orderUUID:orderUUID, to_Customer_customerID : CUSTOMER, quantity : parseInt(1)};
+            
+            let suggestedItems = [] ;
+            let maxItemID = Math.max(...itemIDs);
+            let commonProductIds = productIDs.filter(productId => cat1.includes(productId) || cat2.includes(productId) || cat3.includes(productId));
+            
+            //construct the data for new line items as per suggested  model
+            commonProductIds.forEach(productId => {
+                console.log(productId);
+                        
+                if ((cat1.includes(productId)) && (!productIDs.includes('2BS-14610-00-00')) ) 
+                {
+                   //     suggestedItems.push('EXHAUST PIPE ASSY 1(2BS-14610-00-00), EXHAUST PIPE ASSY(1TP-14610-10-00)');
+                    maxItemID++;
+                    suggestedItems.push({ ...base, itemID : parseInt(maxItemID), to_Product_productID : '2BS-14610-00-00' }); //EXHAUST PIPE ASSY 1
+                } 
 
+                else if ((cat2.includes(productId)) && (!productIDs.includes('BP6-Y2410-01-X8')) )
+                {
+                    maxItemID++;
+                    suggestedItems.push({ ...base, itemID : parseInt(maxItemID),to_Product_productID : 'BP6-Y2410-01-X8'}); //FUEL TANK COMP. - PGD
+                }
+                    //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');                
+                else if ((cat3.includes(productId)) && (!productIDs.includes('GYT-5PA56-20-00')) )
+                {
+                    //suggestedItems.push('FUEL TANK COMP. - BMC(BEA-Y2410-00-01), FUEL TANK COMP. - DNMG(23P-YK241-01-PC), FUEL TANK COMP. - PGD(BP6-Y2410-01-X8)');
+                    maxItemID++;
+                    suggestedItems.push({  ...base, itemID : parseInt(maxItemID),to_Product_productID : 'GYT-5PA56-20-00'}); //GYTR Clutch Pressure Plate
+                }
+            })
+
+            return suggestedItems;
+        } 
 
         this.on('confirmOrder', async (req) => {
             console.log('OrderService: confirmOrder handler'); 

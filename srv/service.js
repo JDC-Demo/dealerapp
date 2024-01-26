@@ -338,12 +338,15 @@ class OrderService extends cds.ApplicationService {
                 req.reject(403, 'Order cannot be updated if its approved or cancelled');
 
             const newItems = await this._addSuggestedOrderLineItem(orderUUID, req, srv)
-            const newItemsDraft = await this._addSuggestedOrderLineItemFromDraft(orderUUID, req, srv)
-        
+            const newItem
+            
+            let items = 0;
+
             if(newItems.length > 0  || newItemsDraft.length > 0) {
                 for (let i = 0; i < newItems.length; i++) {
                     console.log(newItems[i]);
                     await srv.tx(req).run(INSERT.into('OrderItems').entries(newItems[i]));
+                    items = newItems.length
                 }
           
                 for (let i = 0; i < newItemsDraft.length; i++) {
@@ -352,11 +355,10 @@ class OrderService extends cds.ApplicationService {
                     console.log(record);
 
                     await srv.tx(req).run(INSERT.into('OrderItems.Drafts').entries(record));
-                }
-                    
-                let mergedItems = [...newItems, ...newItemsDraft];
-
-            req.info(`${ mergedItems.length } AI recommendation(s) added to the order`); 
+                    items = newItemsDraft.length
+                }              
+                if (items > 1)
+                    req.info(`${ items } AI recommendation(s) product added to the order`); 
             }
             else  
             req.info(`No products for AI recommendation at the moment`); 

@@ -197,6 +197,7 @@ annotate OrderService.OrderItems  with @UI : {
  //   { Value : to_Product.price,  ![@UI.Importance]: #High},
     { Value : unitPrice,  ![@UI.Importance]: #High},
     { Value : netPrice , ![@UI.Importance]: #High},
+    { Value : autoSuggested , ![@UI.Importance]: #High},
     { Value : to_Product.productDescription},
     { Value : to_Product.productModel, Label : 'Product Model' },
     { Value : to_Product.productBrand, Label : 'Product Brand' },
@@ -233,6 +234,7 @@ annotate OrderService.OrderItems  with @UI : {
       { Value : quantity, Label : 'Quantity' },
       { Value : to_Product.price, Label : 'Price' },
       { Value : netPrice, Label : 'Net Price' },
+      { Value : autoSuggested, Label : 'AI suggested'},
       { Value : to_Product.currencyCode_code, Label : 'Currency' },
       { Value : to_Product.productDescription, Label : 'Description' }
     ]

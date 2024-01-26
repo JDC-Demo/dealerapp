@@ -47,7 +47,7 @@ entity OrderItem : managed {
   discount : Decimal(10, 2)  ; // Any discount applied to the order item
   tax: Decimal(10, 2); // Tax applied to the order item
   totalAmount: Decimal(10, 2) @Core.Computed;
-
+  autoSuggested : Boolean @Core.Computed;
  //delivery and return
   deliveryDate: Date @Core.Computed; // The date when the order item is expected to be delivered
   deliveryStatus: String @Core.Computed; // The status of the delivery of the order item

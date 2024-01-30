@@ -338,15 +338,23 @@ class OrderService extends cds.ApplicationService {
                 req.reject(403, 'Order cannot be updated if its approved or cancelled');
 
             const newItems = await this._addSuggestedOrderLineItem(orderUUID, req, srv)
-            const newItemsDraft = await this._addSuggestedOrderLineItemFromDraft(orderUUID, req, srv)
+            const newItemsDraft = [];
+            // commenting this code as it is not required.
+            //await this._addSuggestedOrderLineItemFromDraft(orderUUID, req, srv)
             
             let items = 0;
 
             if(newItems.length > 0  || newItemsDraft.length > 0) {
                 for (let i = 0; i < newItems.length; i++) {
-                    console.log(newItems[i]);
+                    console.log(newItems[i] );
                     await srv.tx(req).run(INSERT.into('OrderItems').entries(newItems[i]));
+                            // update the netprice
+                    const price = await SELECT.one().from(ProductCatalogue).where({ productID: newItems[i].to_Product_productID });
+                    console.log(price)
+                    await cds.run(UPDATE(OrderItems).set({ autoSuggested : true,  netPrice: price.price * newItems[i].quantity, unitPrice: price.price }).where({ itemUUID: newItems[i].itemUUID }));
+
                     items = newItems.length
+                    console.log(items);
                 }
           
                 for (let i = 0; i < newItemsDraft.length; i++) {
@@ -355,13 +363,20 @@ class OrderService extends cds.ApplicationService {
                     console.log(record);
 
                     await srv.tx(req).run(INSERT.into('OrderItems.Drafts').entries(record));
+                            // update the netprice
+                    const price = await SELECT.one().from(ProductCatalogue).where({ productID: record.to_Product_productID });
+                    console.log(price)
+                    await cds.run(UPDATE(OrderItems.Drafts).set({ autoSuggested : true,  netPrice: price.price * record.quantity, unitPrice: price.price }).where({ itemUUID: record.itemUUID }));
+
                     items = newItemsDraft.length
-                }              
-                if (items > 1)
-                    req.info(`${ items } AI recommendation(s) product added to the order`); 
+                    console.log(items);
+                }
+
+                if (items > 0)
+                    req.info(`${ items } recommended product(s) added to the order`); 
             }
             else  
-            req.info(`No products for AI recommendation at the moment`); 
+            req.info(`No products for recommendation at the moment`); 
         });
 
         this._addSuggestedOrderLineItem = async function (orderUUID, req, srv) {
@@ -404,7 +419,7 @@ class OrderService extends cds.ApplicationService {
             return suggestedItems;
         } 
 
-
+/*
         this._addSuggestedOrderLineItemFromDraft = async function (orderUUID, req, srv) {
             
             const tx = cds.transaction(req);
@@ -413,7 +428,7 @@ class OrderService extends cds.ApplicationService {
             const productIDs = orderItems.map(item => item.to_Product_productID);
             const base = {  to_Order_orderUUID:orderUUID, quantity : parseInt(1), autoSuggested : true,  IsActiveEntity: false,
                 HasActiveEntity: false,
-                HasDraftEntity: false
+                HasDraftEntity: true
             };
             
             let suggestedItems = [] ;
@@ -447,7 +462,7 @@ class OrderService extends cds.ApplicationService {
             console.log(`from drafts /n` , suggestedItems)
             return suggestedItems;
         } 
-
+*/
         this.on('confirmOrder', async (req) => {
             console.log('OrderService: confirmOrder handler'); 
             const srv = await cds.connect.to('OrderService')
@@ -503,6 +518,7 @@ class OrderService extends cds.ApplicationService {
 
 
         //add handler for Add to Order action
+        
         this.on('addProductToOrder', async req => {
 
             console.log('OrderService: addProductToOrder handler');

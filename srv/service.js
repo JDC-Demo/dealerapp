@@ -342,7 +342,7 @@ class OrderService extends cds.ApplicationService {
             // commenting this code as it is not required.
             //await this._addSuggestedOrderLineItemFromDraft(orderUUID, req, srv)
             
-            let items = 0;
+            let items = [];
 
             if(newItems.length > 0  || newItemsDraft.length > 0) {
                 for (let i = 0; i < newItems.length; i++) {
@@ -353,7 +353,9 @@ class OrderService extends cds.ApplicationService {
                     console.log(price)
                     await cds.run(UPDATE(OrderItems).set({ autoSuggested : true,  netPrice: price.price * newItems[i].quantity, unitPrice: price.price }).where({ itemUUID: newItems[i].itemUUID }));
 
-                    items = newItems.length
+                    // add products to items array
+
+                     items.push(newItems[i].to_Product_productID) 
                     console.log(items);
                 }
           
@@ -372,8 +374,9 @@ class OrderService extends cds.ApplicationService {
                     console.log(items);
                 }
 
-                if (items > 0)
-                    req.info(`${ items } recommended product(s) added to the order`); 
+                if (items.length > 0)
+                req.info(`Recommended product(s) added to order : \n ${ items.join('\n')} `); 
+                 //   req.info(`${ items } recommended product(s) added to the order`); 
             }
             else  
             req.info(`No products for recommendation at the moment`); 
